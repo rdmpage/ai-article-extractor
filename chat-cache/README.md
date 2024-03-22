@@ -1,0 +1,1 @@
+# Cache for ChapGPT conversations
