@@ -7,43 +7,6 @@ require_once (dirname(__FILE__) . '/shared.php');
 require_once (dirname(__FILE__) . '/parse-volume.php');
 
 //----------------------------------------------------------------------------------------
-// Re OCR a BHL page
-function ocr_bhl_page($PageID, $language = 'en-US')
-{
-	global $config;
-	
-	$text = '';
-	
-	$image_filename = $config['cache'] . '/' . $PageID . '.jpg';
-	$output_filename = $config['cache'] . '/' . $PageID . '.json';
-	
-	if (!file_exists($output_filename))	
-	{
-		if (!file_exists($image_filename))
-		{	
-			$url = 'https://www.biodiversitylibrary.org/pageimage/' . $PageID;
-			$image = get($url);	
-			file_put_contents($image_filename, $image);
-		}
-		
-		$command = './ocr ' . $language . ' false true ' . $image_filename . ' ' . $output_filename;
-	
-		system($command);
-	}
-	
-	$json = file_get_contents($output_filename);
-	
-	$obj = json_decode($json);
-	
-	if ($obj)
-	{
-		$text = $obj->text;
-	}
-	
-	return $text;
-}
-
-//----------------------------------------------------------------------------------------
 function bhl_item_to_doc($item_data)
 {
 	global $basedir;
@@ -72,6 +35,12 @@ function bhl_item_to_doc($item_data)
 	if ($result->parsed)
 	{
 		$doc->volume = $result->volume[0];
+		
+		if (isset($result->{'collection-title'}))
+		{
+			$doc->series = $result->{'collection-title'}[0];
+		}
+	
 	}
 	
 	// BHL
@@ -97,8 +66,7 @@ function bhl_item_to_doc($item_data)
 			$doc->pagenum_to_page[$page_number][] = $doc->page_count;
 		}
 
-		// page type
-		
+		// page type		
 		$doc_page->tags = array();
 	
 		foreach ($Page->PageTypes as $PageType)
@@ -176,6 +144,8 @@ if (1)
 {
 	$TitleID = 6170; // Nautilus
 	$items = array(279209); // v.130:no.4
+	
+	$items = array(318715);
 }
 
 
@@ -185,11 +155,21 @@ if (1)
 	$items = array(22362); // v.28
 }
 
-if (1)
+if (0)
 {
 	$TitleID = 122512; // Memórias do Instituto Butantan
 	$items = array(243620); // v.55: suppl (1993)
 }
+
+if (0)
+{
+	$TitleID = 8982;
+	$items = array(37615); // ser.2:d.7 (1901-1902)
+}
+
+https://www.biodiversitylibrary.org/item/37615#page/7/mode/1up
+
+
 
 /*
 $TitleID = 45410; // Journal of conchology

@@ -31,24 +31,40 @@ if (isset($doc->toc))
 		if (isset($c->page) && isset($c->title))
 		{
 			$page_number = $c->page; // for now assume is single number
-			$page_number = preg_replace('/^(.*)(-.*)$/', '$1', $page_number);
+			$page_number = preg_replace('/^(\d+|[ivx]+)(-.*)$/', '$1', $page_number);
 					
 			if (isset($doc->pagenum_to_page->{$page_number}))
 			{
 				foreach ($doc->pagenum_to_page->{$page_number} as $index)
 				{
 					if (isset($doc->pages[$index]->text))
-					{
-						
+					{						
 						$haystack = $doc->pages[$index]->text;				
 						$needle = $c->title;
 					
 						$haystack = preg_replace('/\R/u', ' ', $haystack);
 						$haystack = preg_replace('/\s\s+/u', ' ', $haystack);
+						
+						// title-specific fixes
+						if (isset($doc->bhl_title_id))
+						{
+							switch ($doc->bhl_title_id)
+							{
+								case 8982:
+									$needle = preg_replace('/\s+With\s*Plates.*$/iu', '', $needle);
+									break;
+		
+								default:
+									break;
+							}
+						}						
+						
 
 						$alignment = swa($needle, $haystack);
 						
 						print_r($alignment);
+						
+						$c->alignment = join("\n", $alignment->text);
 						
 						$c->score = $alignment->score;
 						

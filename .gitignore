@@ -1,4 +1,11 @@
 
 .DS_Store
 
+/cache/
+!/cache/README.md
+
+/chat-cache/
+!/chat-cache/README.md
+
 env.php
+cookie.txt

@@ -31,7 +31,7 @@ if (isset($doc->toc))
 		if (isset($c->page))
 		{
 			$page_number = $c->page; // for now assume is single number
-			$page_number = preg_replace('/^(.*)(-.*)$/', '$1', $page_number);
+			$page_number = preg_replace('/^(\d+|[ivx]+)(-.*)$/', '$1', $page_number);
 		
 			if (isset($doc->pagenum_to_page->{$page_number}))
 			{
@@ -41,6 +41,20 @@ if (isset($doc->toc))
 					{
 						$page_data = get_page($doc->pages[$index]->id, false, $basedir);
 						$doc->pages[$index]->text = $page_data->Result->OcrText;					
+						
+						// OCR?
+						if (isset($doc->bhl_title_id))
+						{
+							switch ($doc->bhl_title_id)
+							{
+								case 8982:
+									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
+									break;
+		
+								default:
+									break;
+							}
+						}						
 					}
 				}
 			}

@@ -32,6 +32,14 @@ $titles = array(
 122512, // Memórias do Instituto Butantan
 );
 
+$titles = array(
+6170, // Nautilus
+8982, // Tijdschrift der Nederlandsche Dierkundige Vereeniging
+);
+
+$titles = array(
+8128, // Smithsonian miscellaneous collections
+);
 
 $deep = false;
 

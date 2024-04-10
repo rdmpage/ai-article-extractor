@@ -208,6 +208,43 @@ function get_page($PageID, $force = false, $basedir = '')
 	return $page_data;
 }
 
+//----------------------------------------------------------------------------------------
+// Re OCR a BHL page
+function ocr_bhl_page($PageID, $language = 'en-US')
+{
+	global $config;
+	
+	$text = '';
+	
+	$image_filename = $config['cache'] . '/' . $PageID . '.jpg';
+	$output_filename = $config['cache'] . '/' . $PageID . '.json';
+	
+	if (!file_exists($output_filename))	
+	{
+		if (!file_exists($image_filename))
+		{	
+			$url = 'https://www.biodiversitylibrary.org/pageimage/' . $PageID;
+			$image = get($url);	
+			file_put_contents($image_filename, $image);
+		}
+		
+		$command = './ocr ' . $language . ' false true ' . $image_filename . ' ' . $output_filename;
+	
+		system($command);
+	}
+	
+	$json = file_get_contents($output_filename);
+	
+	$obj = json_decode($json);
+	
+	if ($obj)
+	{
+		$text = $obj->text;
+	}
+	
+	return $text;
+}
+
 
 
 ?>

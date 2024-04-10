@@ -15,7 +15,7 @@ function parse_volume($text)
 	// pattern fragments
 	
 	// volume
-	$volume_prefix = '([V|v](ol)?|t)\.?\s*';
+	$volume_prefix = '([V|v](ol)?|t|d)\.?\s*';
 	$part_prefix = '[P|p]t\.\s*';
 	$fasc_prefix = 'fasc\.\s*';
 	$band_prefix = 'Bd\.\s*';
@@ -145,6 +145,9 @@ function parse_volume($text)
 
 		// no.71 (2019)
 		'/^' . $number_prefix . $volume_number_pattern . $date_pattern_one_year . '/',
+
+		// ser.2:d.7 (1901-1902)
+		'/^' . $series_pattern . $volume_issue_separator . $volume_prefix . $volume_one_number . $date_pattern_two_years . '/',
 
 		// fallbacks
 		'/^' . $volume_number_pattern . '$/',
@@ -2110,6 +2113,10 @@ if (0)
 	
 	$input=array(	
 	'no.71 (2019)',
+	);
+
+	$input=array(	
+	'ser.2:d.7 (1901-1902)',
 	);
 
 	$failed = array();

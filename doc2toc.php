@@ -60,6 +60,22 @@ if ($have_contents_page )
 	$prompts = array();
 	$prompts[] = 'Extract a table of contents from the following text.';
 	$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
+	
+	// specific tweaks
+	
+	if (isset($doc->bhl_title_id))
+	{
+		switch ($doc->bhl_title_id)
+		{
+			case 8982:
+				$prompts[] = 'The author names appear at the start of the lines of text.';
+				break;
+		
+			default:
+				break;
+		}
+	}
+	
 	$prompts[] = 'The text to analyse is:';
 
 	$prompt = join(" ", $prompts);

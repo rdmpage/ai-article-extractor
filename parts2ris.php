@@ -56,8 +56,8 @@ $keys = array(
 );
 
 $format = 'ris';
-$format = 'tsv';
-$format = 'csl';
+//$format = 'tsv';
+//$format = 'csl';
 
 if ($format == 'tsv')
 {
