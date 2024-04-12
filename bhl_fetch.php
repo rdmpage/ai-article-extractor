@@ -41,6 +41,18 @@ $titles = array(
 8128, // Smithsonian miscellaneous collections
 );
 
+$titles = array(
+206514, // Contributions of the American Entomological Institute
+);
+
+$titles = array(
+42256, // Fieldiana Zoology
+);
+
+$titles = array(
+44963, // Proceedings of the Zoological Society of London
+);
+
 $deep = false;
 
 $force = false;

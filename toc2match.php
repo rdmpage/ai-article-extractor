@@ -31,8 +31,10 @@ if (isset($doc->toc))
 		if (isset($c->page) && isset($c->title))
 		{
 			$page_number = $c->page; // for now assume is single number
-			$page_number = preg_replace('/^(\d+|[ivx]+)(-.*)$/', '$1', $page_number);
-					
+			$page_number = preg_replace('/^(\d+|[ivx]+)\s*(-.*)$/', '$1', $page_number);
+			
+			echo "page_number $page_number\n";
+			
 			if (isset($doc->pagenum_to_page->{$page_number}))
 			{
 				foreach ($doc->pagenum_to_page->{$page_number} as $index)

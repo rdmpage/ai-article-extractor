@@ -86,6 +86,7 @@ if ($have_contents_page )
 		{
 			//$toc_from_text = extract_as_array_of_objects($prompt, $doc->pages[$index]->text);
 			$toc_from_text = extract_structured($prompt, $doc->pages[$index]->text);
+
 			print_r($toc_from_text);
 		
 			if (is_array($toc_from_text))

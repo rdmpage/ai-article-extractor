@@ -21,6 +21,8 @@ function bhl_item_to_doc($item_data)
 	$doc->page_count = 0;
 	$doc->contents_pages = array();
 	$doc->title_pages = array();
+	$doc->issue_pages = array();
+	$doc->article_pages = array();
 	
 	// BHL specific stuff we might need
 	$doc->bhl_title_id = $item_data->Result->PrimaryTitleID;
@@ -96,12 +98,90 @@ function bhl_item_to_doc($item_data)
 				
 				$doc->title_pages[] = $doc->page_count;
 			}
+
+			if (preg_match('/Issue Start/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'issue';
+				
+				$page_data = get_page($Page->PageID, false, $basedir);
+				$doc_page->text = $page_data->Result->OcrText;
+
+				if (1)
+				{
+					$doc_page->text = ocr_bhl_page($Page->PageID);
+				}
+				
+				$doc->issue_pages[] = $doc->page_count;
+			}
+			
+			if (preg_match('/Article Start/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'article';
+				
+				$page_data = get_page($Page->PageID, false, $basedir);
+				$doc_page->text = $page_data->Result->OcrText;
+
+				if (1)
+				{
+					$doc_page->text = ocr_bhl_page($Page->PageID);
+				}
+				
+				$doc->article_pages[] = $doc->page_count;
+			}			
 			
 			if (preg_match('/Blank/i', $PageType->PageTypeName))
 			{
 				$doc_page->tags[] = 'blank';
 			}
+			
+			if (preg_match('/Index/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'index';
+			}
+			
+			if (preg_match('/Text/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'text';
+			}
+
+			if (preg_match('/Appendix/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'text';
+			}
+			
+			if (preg_match('/^Illustration$/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'figure';
+			}
+			
+			if (preg_match('/Chart/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'figure';
+			}
+
+			if (preg_match('/Map/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'figure';
+			}
+
+			if (preg_match('/Foldout/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'figure';
+			}
+			
+			if (preg_match('/List of Illustrations/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'list';
+			}			
+
+			if (preg_match('/Cover/i', $PageType->PageTypeName))
+			{
+				$doc_page->tags[] = 'cover';
+			}			
+			
 		}
+		
+		$doc_page->tags = array_unique($doc_page->tags);
 	
 		$doc->pages[] = $doc_page;
 		$doc->page_count++;
@@ -167,19 +247,80 @@ if (0)
 	$items = array(37615); // ser.2:d.7 (1901-1902)
 }
 
-https://www.biodiversitylibrary.org/item/37615#page/7/mode/1up
+if (1)
+{
+	$TitleID = 8128; // Smithsonian miscellaneous collections
+	$items = array(110960); // v.151
+	
+	$items = array(111083); // v.153:no.4
+	$items = array(36101);
+}
 
 
+if (1)
+{
+	$TitleID = 206514;
+	$items = array(332199);  // didn't work very well
+	$items = array(332655);
+	$items = array(332370);
+	$items = array(332539);
+	$items = array(332345);
+	
+	// force us to do every item
+	$items = array();
+}
+
+if (0)
+{
+	$TitleID = 142707;
+	
+	// force us to do every item
+	$items = array();
+}
 
 /*
-$TitleID = 45410; // Journal of conchology
+if (1)
+{
+	$TitleID = 142707; // Special publications - The Museum, Texas Tech University
+	$items = array(275161); // volume with contents
 
-$items = array(333458); 
-$items = array(327359); // v38:no.4-6
-$items = array(327842); // v.38:no.1-3
+	//$items = array(274998); // volume as monograph
+}
 */
 
+if (1)
+{
+	$TitleID = 61893;
+	
+	$items = array(125955); // not all pages have numbers
+	$items = array(125986);
+}
+
+if (1)
+{
+	$TitleID = 44963 // Proceedings of the Zoological Society of London
+	$items = array(98562); // 1901:v.1 (Jan.-Apr.)
+}
+
+
+$force = true;
+//$force = false;
+
 $basedir = $config['cache'] . '/' . $TitleID;
+
+// make sure we have items
+if (count($items) == 0)
+{
+	$files = scandir($basedir);
+	foreach ($files as $filename)
+	{
+		if (preg_match('/item-(\d+).json/', $filename, $m))
+		{
+			$items[] = $m[1];
+		}
+	}
+
+}
 
 // get title info
 $title = '';
@@ -209,24 +350,31 @@ foreach ($obj->Result->Identifiers as $identifier)
 
 foreach ($items as $ItemID)
 {
+	echo $ItemID . "\n";
+
 	// Get item
 	$filename = $basedir . '/item-' . $ItemID . '.json';
 	$json = file_get_contents($filename);
 	$item_data = json_decode($json);
-
-	$doc = bhl_item_to_doc($item_data);
-	
-	$doc->title = $title;
-	
-	if ($issn != '')
-	{
-		$doc->issn = $issn;
-	}
-	
-	print_r($doc);
 	
 	$output_filename = $ItemID . '.json';
-	file_put_contents($output_filename, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+	
+	if (!file_exists($output_filename) || $force)
+	{
+
+		$doc = bhl_item_to_doc($item_data);
+	
+		$doc->title = $title;
+	
+		if ($issn != '')
+		{
+			$doc->issn = $issn;
+		}
+	
+		print_r($doc);
+		
+		file_put_contents($output_filename, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+	}
 }
 
 ?>

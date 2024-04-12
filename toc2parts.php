@@ -206,8 +206,8 @@ if (isset($doc->toc))
 					{
 						if (preg_match('/(.*)-(.*)/', $article->pages, $m))
 						{
-							$pages[0] = $m[1];
-							$pages[1] = $m[2];
+							$pages[0] = trim($m[1]);
+							$pages[1] = trim($m[2]);
 						}
 					}					
 										
@@ -255,6 +255,23 @@ if (isset($doc->toc))
 					}
 					
 					$article->url = 'https://biodiversitylibrary.org/page/' . $doc->pages[$c->index]->id;
+					
+					// case
+					if (isset($article->title))
+					{
+						// special handling
+						switch ($doc->bhl_title_id)
+						{
+							case 206514: // Contributions of the American Entomological Institute
+								$article->title = mb_convert_case($article->title, MB_CASE_UPPER);
+								break;
+				
+							default:
+								break;
+						}
+					
+					
+					}
 						
 				}
 			
@@ -263,7 +280,7 @@ if (isset($doc->toc))
 				// ignore "empty" articles
 				$go = true;
 				
-				//$go = isset($article->title);				
+				$go = isset($article->title);				
 				
 				if ($go)
 				{			

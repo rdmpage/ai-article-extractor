@@ -31,7 +31,7 @@ if (isset($doc->toc))
 		if (isset($c->page))
 		{
 			$page_number = $c->page; // for now assume is single number
-			$page_number = preg_replace('/^(\d+|[ivx]+)(-.*)$/', '$1', $page_number);
+			$page_number = preg_replace('/^(\d+|[ivx]+)\s*(-.*)$/', '$1', $page_number);
 		
 			if (isset($doc->pagenum_to_page->{$page_number}))
 			{

@@ -38,6 +38,9 @@ $field_to_ris_key = array(
 
 	'publisher'	=> 'PB',
 	'publoc'	=> 'PP',
+	
+	// hacks
+	'pageids'	=> 'N2',
 	);
 
 
@@ -51,6 +54,7 @@ $keys = array(
 'spage',
 'epage',
 'year',
+'date',
 'doi',
 'url'
 );
@@ -63,7 +67,6 @@ if ($format == 'tsv')
 {
 	echo join("\t", $keys) . "\n";
 }
-
 
 if (isset($doc->parts))
 {
@@ -96,8 +99,12 @@ if (isset($doc->parts))
 						case 'doi':
 							if (isset($field_to_ris_key[$k]))
 							{
-								echo $field_to_ris_key[$k] . '  - ' . $v . "\n";
+								echo $field_to_ris_key[$k] . '  - ' . trim($v) . "\n";
 							}
+							break;
+							
+						case 'date':
+							echo $field_to_ris_key[$k] . '  - ' . str_replace('/','-', $v) . "\n";
 							break;
 						
 						case 'authors':
@@ -105,6 +112,10 @@ if (isset($doc->parts))
 							{
 								echo $field_to_ris_key[$k] . '  - ' . mb_convert_case($a, MB_CASE_TITLE) . "\n";
 							}
+							break;
+							
+						case 'pageids':
+							echo $field_to_ris_key[$k] . '  - ' . join(',', $v) . "\n";
 							break;
 				
 						default:

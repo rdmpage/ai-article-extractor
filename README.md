@@ -35,6 +35,27 @@ F --> | dedup.php| G(filter out obvious duplicates in doc.parts based on title m
 G --> | parts2ris.php |H(export parts in RIS format)
 ```
 
+### Articles from BHL-delimited issues in volume
+
+#### Flagged  by “issue start” page, so each issue in a volume is an article
+
+```mermaid
+graph TD
+start --> |bhl_fetch.php | A(Content from BHL)
+A --> |bhl2doc.php| B(convert BHL JSON to doc with list of issues with text)
+B --> |issues2doc.php| C(use ChatGPT to parse start of pages for issues in doc.parts)
+C --> | parts2ris.php |H(export parts in RIS format)
+
+#### Flagged  by “article start” page, so each issue in a volume is an article
+
+```mermaid
+graph TD
+start --> |bhl_fetch.php | A(Content from BHL)
+A --> |bhl2doc.php| B(convert BHL JSON to doc with list of issues with text)
+B --> |articles2doc.php| C(use ChatGPT to parse start of pages for issues in doc.parts)
+C --> | parts2ris.php |H(export parts in RIS format)
+
+
 ## Reading
 
 
