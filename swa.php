@@ -40,9 +40,11 @@ function swa($seq1, $seq2, $label1 = 'one', $label2 = 'two', $debug = false)
 	$alignment->strings[] = $seq2;
 	
 	$alignment->text = array();
+	
+	// spans of alignment
 	$alignment->spans = array(
-		array(),
-		array()
+		array(0 => 0, 1 => 0), // force them to be arrays
+		array(0 => 0, 1 => 0)
 		);
 	$alignment->score = 0.0;
 	
