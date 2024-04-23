@@ -137,8 +137,19 @@ if (isset($doc->toc))
 			
 			if ($haystack != '' && $title != '')
 			{
-				$keys = ["title", "authors"]; // contents of a book, or journal with minimal metadara on page
-				//$keys = ["title", "authors", "journal", "volume", "issue", "pages", "year"]; // journal
+				switch ($doc->bhl_title_id)
+				{
+					case 206514:
+						// contents of a book, or journal with minimal metadara on page
+						$keys = ["title", "authors"]; 
+						break;
+				
+					default:
+						// journal with lots of metadata on page	
+						$keys = ["title", "authors", "journal", "volume", "issue", "pages", "year"]; 			
+						break;
+				}
+			
 				$articles = extract_metadata($haystack, $title, $keys);
 			}
 			
@@ -186,7 +197,14 @@ if (isset($doc->toc))
 								case 'year':
 									$article->{$k} = preg_replace('/[A-Z]\w+\s+([0-9]{4})/', '$1', $v);
 									break;
-							
+									
+								case 'authors':
+									foreach ($article->authors as &$author)
+									{
+										$author = mb_convert_case($author, MB_CASE_TITLE);
+									}
+									break;
+																
 								default:
 									break;							
 							}
@@ -209,7 +227,7 @@ if (isset($doc->toc))
 							$pages[0] = trim($m[1]);
 							$pages[1] = trim($m[2]);
 						}
-					}					
+					}	
 										
 					if (count($pages) > 0)
 					{
@@ -232,7 +250,10 @@ if (isset($doc->toc))
 							$article->epage = $pages[1];
 						}						
 					}
-
+					
+					// where does title start on the page?
+					$article->title_start = $c->spans[1][0];
+					
 					// metadata
 					
 					// crude copy of BHL info
@@ -252,6 +273,12 @@ if (isset($doc->toc))
 					if (isset($doc->issn) && !isset($article->issn))
 					{
 						$article->issn = $doc->issn;
+						
+						// sanity check
+						if (strlen($article->issn) == 8)
+						{
+							$article->issn  = substr($article->issn , 0, 4) . '-' . substr($article->issn, 4);
+						}
 					}
 					
 					$article->url = 'https://biodiversitylibrary.org/page/' . $doc->pages[$c->index]->id;
@@ -329,13 +356,30 @@ for ($i = 0; $i < ($n - 1); $i++)
 			
 				if (isset($doc->pagenum_to_page->{$next_spage}))
 				{
-					// need to handle having multiple pages with the same number
+					// to do: handle having multiple pages with the same number
 					
 					$next_spage_index = $doc->pagenum_to_page->{$next_spage}[0];
 					
-					// need to figure out if article ends on same page as nect article, 
+					// need to figure out if article ends on same page as next article, 
 					// or before
-					$next_spage_index--;
+					
+					if (isset($doc->parts[$contents_list[$next_index]][0]->title_start))
+					{
+						if ($doc->parts[$contents_list[$next_index]][0]->title_start > 100)
+						{
+							// next title likely starts at the top of the page
+						}
+						else
+						{
+							// next title is down the page, so current article ends on
+							// same page as next article starts
+							$next_spage_index--;
+						}
+					}
+					else
+					{					
+						$next_spage_index--;
+					}
 					
 					// handle blank pages
 					$is_blank = false;
@@ -355,10 +399,15 @@ for ($i = 0; $i < ($n - 1); $i++)
 						$next_spage_index--;
 					}
 					
-					$next_spage = 0;
 					if (isset($doc->pages[$next_spage_index]->number))
 					{
 						$article->epage = $doc->pages[$next_spage_index]->number;
+						
+						// sanity check
+						if ($article->epage < $article->spage)
+						{
+							unset($article->epage);
+						}
 					}
 				}
 			

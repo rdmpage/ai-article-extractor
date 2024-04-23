@@ -67,7 +67,7 @@ if (isset($doc->toc))
 						print_r($alignment);
 						
 						$c->alignment = join("\n", $alignment->text);
-						
+						$c->spans = $alignment->spans;
 						$c->score = $alignment->score;
 						
 						if ($c->score > $theshold)
