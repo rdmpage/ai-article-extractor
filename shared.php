@@ -12,6 +12,7 @@ function get_page_number($PageNumbers)
 	{
 		$value = $PageNumbers[0]->Number;
 		$value = preg_replace('/Page%/', '', $value);
+		$value = preg_replace('/^p\.%/', '', $value);
 		$value = preg_replace('/(Pl\.?(ate)?)%/', '$1 ', $value);
 	}
 		
