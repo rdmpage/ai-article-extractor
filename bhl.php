@@ -210,7 +210,7 @@ function get_page($PageID, $force = false, $basedir = '')
 
 //----------------------------------------------------------------------------------------
 // Re OCR a BHL page
-function ocr_bhl_page($PageID, $language = 'en-US')
+function ocr_bhl_page($PageID, $language = 'en-US', $force = false)
 {
 	global $config;
 	
@@ -219,7 +219,7 @@ function ocr_bhl_page($PageID, $language = 'en-US')
 	$image_filename = $config['cache'] . '/' . $PageID . '.jpg';
 	$output_filename = $config['cache'] . '/' . $PageID . '.json';
 	
-	if (!file_exists($output_filename))	
+	if (!file_exists($output_filename) || $force)	
 	{
 		if (!file_exists($image_filename))
 		{	
@@ -229,7 +229,7 @@ function ocr_bhl_page($PageID, $language = 'en-US')
 		}
 		
 		$command = './ocr ' . $language . ' false true ' . $image_filename . ' ' . $output_filename;
-	
+		
 		system($command);
 	}
 	

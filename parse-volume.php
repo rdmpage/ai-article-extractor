@@ -48,6 +48,9 @@ function parse_volume($text)
 
 	// issue
 	$issue_pattern = '(no|pt|Heft|fasc)\.((?<issue>\d+)|(?<issue1>\d+)-(?<issue2>\d+))';		
+
+	// no. 1-no. 2
+	$issue_pattern_two = '(' . $number_prefix . '(?<issue1>\d+)-' . $number_prefix . '(?<issue2>\d+)' . ')';		
 	
 	// supplement 
 	$supplement_pattern = '(?<issue>Suppl\.?)';
@@ -148,6 +151,10 @@ function parse_volume($text)
 
 		// ser.2:d.7 (1901-1902)
 		'/^' . $series_pattern . $volume_issue_separator . $volume_prefix . $volume_one_number . $date_pattern_two_years . '/',
+		
+		// Vol. 5 : no. 1-no. 2 (1986)
+		'/^' . $volume_pattern_1 . '\s*' . $volume_issue_separator . '\s*' . $issue_pattern_two . $date_pattern_one_year . '/',
+
 
 		// fallbacks
 		'/^' . $volume_number_pattern . '$/',
@@ -2117,6 +2124,10 @@ if (0)
 
 	$input=array(	
 	'ser.2:d.7 (1901-1902)',
+	);
+	
+	$input=array(	
+	'Vol. 5 : no. 1-no. 2 (1986)',
 	);
 
 	$failed = array();

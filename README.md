@@ -43,8 +43,9 @@ G --> | parts2ris.php |H(export parts in RIS format)
 graph TD
 start --> |bhl_fetch.php | A(Content from BHL)
 A --> |bhl2doc.php| B(convert BHL JSON to doc with list of issues with text)
-B --> |issues2doc.php| C(use ChatGPT to parse start of pages for issues in doc.parts)
+B --> |issue2parts.php| C(use ChatGPT to parse start of pages for issues in doc.parts)
 C --> | parts2ris.php |H(export parts in RIS format)
+```
 
 #### Flagged  by “article start” page, so each issue in a volume is an article
 
@@ -52,8 +53,9 @@ C --> | parts2ris.php |H(export parts in RIS format)
 graph TD
 start --> |bhl_fetch.php | A(Content from BHL)
 A --> |bhl2doc.php| B(convert BHL JSON to doc with list of issues with text)
-B --> |articles2doc.php| C(use ChatGPT to parse start of pages for issues in doc.parts)
+B --> |article2parts.php| C(use ChatGPT to parse start of pages for issues in doc.parts)
 C --> | parts2ris.php |H(export parts in RIS format)
+```
 
 
 ## Reading

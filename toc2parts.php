@@ -177,7 +177,7 @@ if (isset($doc->toc))
 						// Missing values
 						if (isset($article->$k) && !is_array($article->$k))
 						{
-							if (preg_match('/(Unknown|Not specified)/i', $v))
+							if (preg_match('/(Unknown|Not specified|Not provided|N\/A)/i', $v))
 							{
 								unset($article->$k);
 							}
@@ -196,6 +196,10 @@ if (isset($doc->toc))
 							{
 								case 'year':
 									$article->{$k} = preg_replace('/[A-Z]\w+\s+([0-9]{4})/', '$1', $v);
+									break;
+
+								case 'issue':
+									$article->{$k} = preg_replace('/N°\s+/u', '$1', $v);
 									break;
 									
 								case 'authors':

@@ -53,6 +53,25 @@ $titles = array(
 44963, // Proceedings of the Zoological Society of London
 );
 
+$titles = array(
+204608, // Alytes
+);
+
+// Acta Her Sin, etc.
+$titles = array(
+53833, //
+53832, // Acta herpetologica Sinica
+46858, // Chinese herpetological research
+40011, // Chinese herpetological research
+2804, // Asiatic herpetological research
+);
+
+$titles = array(
+3179, // University of Kansas Science Bulletin
+15415, // The Kansas University science bulletin
+);
+
+
 $deep = false;
 
 $force = false;

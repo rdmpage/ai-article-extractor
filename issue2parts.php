@@ -82,7 +82,7 @@ function extract_metadata($text, $keys = ["title", "authors", "journal", "volume
 //----------------------------------------------------------------------------------------
 
 $debug = false;
-$debug = true;
+//$debug = true;
 
 $force = true;
 $force = false;
@@ -186,10 +186,23 @@ if (isset($doc->issue_pages))
 									$value = mb_convert_case($value, MB_CASE_TITLE);
 								}
 								break;
+							
+							case 'volume':
+								if (preg_match('/[ivxlcm]/i', $article->{$k}))
+								{
+									$article->{$k} = arabic($article->{$k});
+								}
+								break;
+
+							case 'issue':
+								$article->{$k} = preg_replace('/Nos?\.\s*/', '', $article->{$k});
+								$article->{$k} = preg_replace('/\s+and\s+/', '-', $article->{$k});
+								$article->{$k} = trim($article->{$k});
+								break;
 								
 							// optional
 							case 'title':
-								$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
+								//$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
 								break;
 						
 							default:
@@ -278,7 +291,11 @@ for ($i = 0; $i < $n; $i++)
 	{
 		$end = $starts[$i + 1];
 	}
-	echo "$i " . $starts[$i] . " $end\n";
+	
+	if ($debug)
+	{
+		echo "$i " . $starts[$i] . " $end\n";
+	}
 	
 	$pages = array();
 	
@@ -293,6 +310,18 @@ for ($i = 0; $i < $n; $i++)
 	
 	for ($k = $starts[$i]; $k < $end; $k++)
 	{	
+		if (is_object($doc->pages[$k]->tags))
+		{
+			// no idea why this is a thing,
+			// but tags can be objects instead of arrays :(
+			$doc->pages[$k]->tags = (array)$doc->pages[$k]->tags;
+			/*
+			echo "$k is object\n";
+			print_r($doc->pages[$k]->tags);
+			exit();
+			*/
+		}
+	
 		if (isset($doc->pages[$k]->number))
 		{
 			if ($spage == 0)
@@ -352,11 +381,10 @@ for ($i = 0; $i < $n; $i++)
 		$doc->parts[$starts[$i]][0]->epage = $epage;
 	}
 	
-	print_r($pages);
+	//print_r($pages);
 }
 
 print_r($doc->parts);
-
 
 
 // save updated document to disk

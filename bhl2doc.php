@@ -182,10 +182,52 @@ function bhl_item_to_doc($item_data)
 		}
 		
 		$doc_page->tags = array_unique($doc_page->tags);
+		
+		// If we have 'contents' and 'index' tags together then we may try
+		// and read the index as if it was a table of contents, so delete this pages
+		// from list of contents pages
+		$tags = array();
+		if (count($doc_page->tags) > 1)
+		{
+			foreach ($doc_page->tags as $k => $v)
+			{
+				if ($v == 'contents' || $v == 'index')
+				{
+					$tags[$v] = $k;
+				}
+			}
+			if (count($tags) == 2)
+			{
+				// delete this page from list contents and ensure array is reindexed
+				$index = array_search($doc->page_count, $doc->contents_pages);
+				array_splice($doc->contents_pages, $index, 1);
+			}
+		}
 	
 		$doc->pages[] = $doc_page;
 		$doc->page_count++;
 
+	}
+	
+	
+	// hack
+	if (isset( $doc->id_to_page[37171011]))
+	{
+		$PageID = 37171011;
+		
+		$page_index = $doc->id_to_page[$PageID];
+		$doc->pages[$page_index]->tags[] = 'contents';
+		
+		$page_data = get_page($PageID, false, $basedir);
+		
+		$doc->pages[$page_index]->text = $page_data->Result->OcrText;
+		
+		if (1)
+		{
+			$doc->pages[$page_index]->text = ocr_bhl_page($PageID, 'zh-cn');
+		}
+			
+		$doc->contents_pages[] = $page_index;
 	}
 	
 	return $doc;
@@ -279,7 +321,7 @@ if (0)
 }
 
 /*
-if (1)
+if (0)
 {
 	$TitleID = 142707; // Special publications - The Museum, Texas Tech University
 	$items = array(275161); // volume with contents
@@ -288,19 +330,58 @@ if (1)
 }
 */
 
-if (1)
+if (0) // Records Australian Museum
 {
 	$TitleID = 61893;
 	
 	$items = array(125955); // not all pages have numbers
 	$items = array(125986);
+	$items = array(126201);
+	
+	$items = array();
+}
+
+if (0)
+{
+	$TitleID = 44963; // Proceedings of the Zoological Society of London
+	$items = array(98562); // 1901:v.1 (Jan.-Apr.)
 }
 
 if (1)
 {
-	$TitleID = 44963 // Proceedings of the Zoological Society of London
-	$items = array(98562); // 1901:v.1 (Jan.-Apr.)
+	$TitleID = 204608; // Alytes
+	$items = array(332701); // Vol. 27 : no. 4 (2011)
+	
+	$items = array(332777);
 }
+
+if (1)
+{
+	$TitleID = 53832; // Liangqi baxing dongwu yanjiu = Acta herpetologica Sinica
+	$items = array(114352); 
+}
+
+if (1)
+{
+	$TitleID = 204608; // Alytes
+	$items = array(327060);
+}
+
+if (0)
+{
+	$TitleID = 44963;
+	$items = array(96442);
+}
+
+if (1)
+{
+	$TitleID = 3179 ;// University of Kansas Science Bulletin
+	$items = array();
+}
+
+
+
+
 
 
 $force = true;
