@@ -5,6 +5,8 @@
 
 require_once (dirname(__FILE__) . '/openai.php');
 require_once (dirname(__FILE__) . '/shared.php');
+require_once (dirname(__FILE__) . '/bhl.php');
+
 
 //----------------------------------------------------------------------------------------
 // Use ChatGPT to extract a list of structured data
@@ -106,12 +108,23 @@ $doc->pages = (array)$doc->pages;
 
 $doc->parts = array();
 
+$basedir = $config['cache'] . '/' . $doc->bhl_title_id;
+
 // given a list of pages that start issues (e.g., one article per issue) let's get the
 // article metadata
 if (isset($doc->article_pages))
 {
 	foreach ($doc->article_pages as $index)
 	{
+		// normally we will have text, but if we've manually edited article_pages then
+		// we may need to fecth the text
+		
+		if (!isset($doc->pages[$index]->text))
+		{
+			$page_data = get_page($doc->pages[$index]->id, false, $basedir);
+			$doc->pages[$index]->text = $page_data->Result->OcrText;								
+		}	
+	
 		$text = $doc->pages[$index]->text;
 		
 		if ($debug)
@@ -127,9 +140,16 @@ if (isset($doc->article_pages))
 				$keys = ["title", "authors", "journal", "volume", "number", "year"];
 				break;
 				
+			case 135556: // Journal of South African botany
+				$keys = ["title", "authors"];
+				break;
+
+			case 12920: // Malacologia
+				$keys = ["title", "authors", "journal", "volume", "issue", "year", "pages"];
+				break;
+				
 			default:
 				$keys = ["title", "authors", "journal", "volume", "issue", "date"];
-				$keys = ["title", "authors", "journal", "volume", "issue", "year"];
 				break;
 		}
 		
@@ -187,6 +207,14 @@ if (isset($doc->article_pages))
 									$value = mb_convert_case($value, MB_CASE_TITLE);
 								}
 								break;
+
+							case 'volume':
+								if (preg_match('/[ivxlcm]/i', $article->{$k}))
+								{
+									$article->{$k} = arabic($article->{$k});
+								}
+								break;
+
 								
 							// optional
 							case 'title':
@@ -219,6 +247,21 @@ if (isset($doc->article_pages))
 				{
 					$article->issn = $doc->issn;
 				}
+				
+				// do we have page numbers?
+				if (isset($article->pages))
+				{
+					if (preg_match('/(.*)-(.*)/', $article->pages, $m))
+					{
+						$article->spage = trim($m[1]);
+						$article->epage = trim($m[2]);
+					}
+					else
+					{
+						$article->spage = $article->pages;
+					}
+				}	
+				
 				
 				$article->url = 'https://biodiversitylibrary.org/page/' . $doc->pages[$index]->id;
 				
@@ -256,9 +299,9 @@ if (isset($doc->article_pages))
 	}
 }
 
+if (0)
+{
 // build page ranges
-
-print_r($doc->parts);
 
 // iterature over issues and try and read page numbers, and store an array of PageIDs
 // Note that we store parts as arrays indexed by page number as other methods may find more
@@ -376,7 +419,7 @@ for ($i = 0; $i < $n; $i++)
 
 print_r($doc->parts);
 
-
+}
 
 // save updated document to disk
 file_put_contents($filename, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));

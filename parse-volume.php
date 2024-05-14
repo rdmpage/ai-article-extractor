@@ -50,7 +50,7 @@ function parse_volume($text)
 	$issue_pattern = '(no|pt|Heft|fasc)\.((?<issue>\d+)|(?<issue1>\d+)-(?<issue2>\d+))';		
 
 	// no. 1-no. 2
-	$issue_pattern_two = '(' . $number_prefix . '(?<issue1>\d+)-' . $number_prefix . '(?<issue2>\d+)' . ')';		
+	$issue_pattern_two = '(' . $number_prefix . '(?<issue1>\d+)\s*-\s*' . $number_prefix . '(?<issue2>\d+)' . ')';		
 	
 	// supplement 
 	$supplement_pattern = '(?<issue>Suppl\.?)';

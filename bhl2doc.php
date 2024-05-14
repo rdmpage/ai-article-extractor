@@ -379,9 +379,68 @@ if (1)
 	$items = array();
 }
 
+if (1)
+{
+	$TitleID = 3943 ; // Proceedings of the California Academy of Science
+	$items = array(334445);
+}
 
 
+if (1)
+{
+	$TitleID = 135556; // Journal of South African botany
+	$items = array(334427);
+}
 
+
+if (1)
+{
+	$TitleID = 140312; // Bulletin of the Maryland Herpetological Society
+	$items=array(239185);
+
+}
+
+if (1)
+{
+	$TitleID = 204608; // Alytes
+	$items = array(332701);
+}
+
+if (1)
+{
+	$TitleID = 3943 ; // Proceedings of the California Academy of Science
+	$items = array(334523,334531);
+	
+	$items = array(
+		266104, 
+		333546,
+		334640,
+		334653,
+		334655,
+		334739,
+		334829,
+		);
+
+}
+
+if (0)
+{
+	$TitleID = 135556 ; // Journal of South African botany
+	$items = array(334517);
+}
+
+if (0)
+{
+	$TitleID = 12920 ; // Malacologia
+	$items = array();
+}
+
+if (0)
+{
+	$TitleID = 11247; // Comunicaciones del Museo nacional de Buenos Aires
+
+	$items = array();
+}
 
 
 $force = true;

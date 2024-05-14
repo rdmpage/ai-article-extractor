@@ -81,8 +81,7 @@ if (isset($doc->toc))
 	}
 }
 
-
 // save updated document to disk
-file_put_contents($filename, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+file_put_contents($filename, json_encode($doc, JSON_PARTIAL_OUTPUT_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 
 ?>

@@ -208,6 +208,13 @@ if (isset($doc->toc))
 										$author = mb_convert_case($author, MB_CASE_TITLE);
 									}
 									break;
+
+								case 'volume':
+									if (preg_match('/[ivxlcm]/i', $article->{$k}))
+									{
+										$article->{$k} = arabic($article->{$k});
+									}
+								break;
 																
 								default:
 									break;							

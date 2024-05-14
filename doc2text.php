@@ -50,6 +50,10 @@ if (isset($doc->toc))
 								case 8982:
 									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
 									break;
+
+								case 135556:
+									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
+									break;
 									
 								case 53832:
 									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id, 'zh-cn');

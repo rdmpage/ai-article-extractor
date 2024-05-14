@@ -71,12 +71,44 @@ $titles = array(
 15415, // The Kansas University science bulletin
 );
 
+$titles = array(
+3943, // Proceedings of the California Academy of Sciences, just want to do 334445
+135556 // Journal of South African botany
+);
+
+$titles = array(
+140312, // Bulletin of the Maryland Herpetological Society
+);
+
+// 334517
+
+$titles = array(
+3943, // Proceedings of the California Academy of Sciences, just want to do 334445
+135556, // Journal of South African botany
+12920, // Malacologia
+);
+
+$titles = array(
+3943, // Proceedings of the California Academy of Sciences, just want to do 334445
+135556, // Journal of South African botany
+11247, // Comunicaciones del Museo nacional de Buenos Aires
+);
+
+$titles=array(
+45481, // Genera insectorum
+);
+
+$titles = array(
+3943, // Proceedings of the California Academy of Sciences, just want to do 334445
+);
+
 
 $deep = false;
 
 $force = false;
 
 $force_title = false; // set true if title has been updated with new items
+$force_title = true;
 
 $fetch_counter = 1;
 

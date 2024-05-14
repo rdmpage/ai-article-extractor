@@ -131,7 +131,7 @@ else
 		$prompts = array();
 		$prompts[] = 'Extract bibliographic data from the following text which is the title page for the work.';
 		$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", "journal", "volume", "issue", "year", and "pages".';
-		$prompts[] = 'If a filed has no information do not include that field in the JSON output.';
+		$prompts[] = 'If a field has no information do not include that field in the JSON output.';
 		$prompts[] = 'The text to analyse is:';
 
 		$prompt = join(" ", $prompts);
