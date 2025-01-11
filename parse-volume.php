@@ -19,7 +19,7 @@ function parse_volume($text)
 	$part_prefix = '[P|p]t\.\s*';
 	$fasc_prefix = 'fasc\.\s*';
 	$band_prefix = 'Bd\.\s*';
-	$number_prefix = '[N|n]o\.\s*';
+	$number_prefix = '[N|n][o|r]\.\s*';
 	
 	$volume_number_pattern = '(?<volume1>\d+)(-(?<volume2>\d+))?';	
 	
@@ -47,7 +47,7 @@ function parse_volume($text)
 	$series_pattern = 'ser\.(?<series>\d+)';
 
 	// issue
-	$issue_pattern = '(no|pt|Heft|fasc)\.((?<issue>\d+)|(?<issue1>\d+)-(?<issue2>\d+))';		
+	$issue_pattern = '(no|pt|Heft|fasc)\.?\s*((?<issue>\d+)|(?<issue1>\d+)-(?<issue2>\d+))';		
 
 	// no. 1-no. 2
 	$issue_pattern_two = '(' . $number_prefix . '(?<issue1>\d+)\s*-\s*' . $number_prefix . '(?<issue2>\d+)' . ')';		
@@ -76,7 +76,6 @@ function parse_volume($text)
 	
 	// year and two months
 	$date_pattern_year_two_months = '(\s*\((?<date>(?<y1>[0-9]{4}):' . $date_pattern_two_months . ')\))';
-
 
 	$date_pattern_year_month_twice = '(\s*\((?<date1>(?<y1>[0-9]{4}):(?<m1>\w+\.?)-(?<y2>[0-9]{4}):(?<m2>\w+\.?))\))';
 
@@ -154,6 +153,12 @@ function parse_volume($text)
 		
 		// Vol. 5 : no. 1-no. 2 (1986)
 		'/^' . $volume_pattern_1 . '\s*' . $volume_issue_separator . '\s*' . $issue_pattern_two . $date_pattern_one_year . '/',
+
+
+		// Boletim do Museu Paraense Emílio Goeldi
+		// 4, no 2, 1988
+		'/^' . $volume_one_number . ',\s*' . $issue_pattern. ',\s*' . $year_pattern . '/',
+		
 
 
 		// fallbacks
@@ -2129,6 +2134,15 @@ if (0)
 	$input=array(	
 	'Vol. 5 : no. 1-no. 2 (1986)',
 	);
+	
+	$input=array(	
+	'4, no 2, 1988',
+	);
+
+	$input=array(	
+	'nr.57 (2011)',
+	);
+
 
 	$failed = array();
 
