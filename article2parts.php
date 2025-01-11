@@ -148,6 +148,7 @@ if (isset($doc->article_pages))
 				$keys = ["title", "authors", "journal", "volume", "issue", "year", "pages"];
 				break;
 				
+				
 			default:
 				$keys = ["title", "authors", "journal", "volume", "issue", "date"];
 				break;

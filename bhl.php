@@ -245,6 +245,48 @@ function ocr_bhl_page($PageID, $language = 'en-US', $force = false)
 	return $text;
 }
 
+//----------------------------------------------------------------------------------------
+// Re OCR a BHL page fetched direct from IA (if BHL's image server is broken)
+function ocr_ia_page($doc, $index, $language = 'en-US', $force = false)
+{
+	global $config;
+	
+	$text = '';
+	
+	$PageID = $doc->pages[$index]->id;
+	
+	$image_filename = $config['cache'] . '/' . $PageID . '.jpg';
+	$output_filename = $config['cache'] . '/' . $PageID . '.json';
+	
+	if (!file_exists($output_filename) || $force)	
+	{
+		if (!file_exists($image_filename))
+		{	
+			$url = 'https://www.archive.org/download/' . $doc->ia . '/page/n' . $index;
+
+			echo $url . "\n";
+			
+			$image = get($url);	
+			file_put_contents($image_filename, $image);
+		}
+		
+		$command = './ocr ' . $language . ' false true ' . $image_filename . ' ' . $output_filename;
+		
+		system($command);
+	}
+	
+	$json = file_get_contents($output_filename);
+	
+	$obj = json_decode($json);
+	
+	if ($obj)
+	{
+		$text = $obj->text;
+	}
+	
+	return $text;
+}
+
 
 
 ?>

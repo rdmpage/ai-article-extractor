@@ -66,6 +66,9 @@ function extract_metadata($text, $title_hint = '', $keys = ["title", "authors"])
 	$prompt_lines[] = 'Output the results in JSON as an array of objects.';
 	$prompt_lines[] = 'The object should following keys (where a value is available): "' . join(",", $keys) . '".';	
 	$prompt_lines[] = 'The "authors" field should be an array.';	
+	
+	$prompt_lines[] = 'If title has Roman number as a prefix please retain that Roman number.';	
+	
 
 	$prompt_lines[] = 'The text to analyse is: ';
 
@@ -137,17 +140,31 @@ if (isset($doc->toc))
 			
 			if ($haystack != '' && $title != '')
 			{
-				switch ($doc->bhl_title_id)
+				// default
+				$keys = ["title", "authors", "journal", "volume", "issue", "pages", "year"]; 			
+						
+				if (isset($doc->bhl_title_id))
 				{
-					case 206514:
-						// contents of a book, or journal with minimal metadara on page
-						$keys = ["title", "authors"]; 
-						break;
-				
-					default:
-						// journal with lots of metadata on page	
-						$keys = ["title", "authors", "journal", "volume", "issue", "pages", "year"]; 			
-						break;
+					switch ($doc->bhl_title_id)
+					{
+						case 206514:
+							// contents of a book, or journal with minimal metadara on page
+							$keys = ["title", "authors"]; 
+							break;
+	
+						case 150137: // Contributions of the American Entomological Institute
+							$keys = ["title", "authors"];
+							break;
+							
+						case 150137: // Biodiversity, biogeography and nature conservation in Wallacea and New Guinea
+							$keys = ["title", "authors", "pages"];
+							break;
+					
+						default:
+							// journal with lots of metadata on page	
+							$keys = ["title", "authors", "journal", "volume", "issue", "pages", "year"]; 			
+							break;
+					}
 				}
 			
 				$articles = extract_metadata($haystack, $title, $keys);
@@ -200,11 +217,24 @@ if (isset($doc->toc))
 
 								case 'issue':
 									$article->{$k} = preg_replace('/N°\s+/u', '$1', $v);
+									$article->{$k} = preg_replace('/No\.?\s*/u', '$1', $v);
 									break;
 									
 								case 'authors':
 									foreach ($article->authors as &$author)
 									{
+										// suffix
+										$author = preg_replace('/,\s+Es[o|q]\..*$/', '', $author);
+
+										$author = preg_replace('/[~:\'\*°]/', '', $author);
+										$author = preg_replace('/\s+$/', '', $author);
+										$author = preg_replace('/([A-Z])\.([A-Z])/', '$1. $2', $author);
+										$author = preg_replace('/([A-Z])\.([A-Z])/', '$1. $2', $author);
+										
+										// qualifications
+										$author = preg_replace('/,\s+Es[q|a]\./', '', $author);
+										
+									
 										$author = mb_convert_case($author, MB_CASE_TITLE);
 									}
 									break;
@@ -215,6 +245,15 @@ if (isset($doc->toc))
 										$article->{$k} = arabic($article->{$k});
 									}
 								break;
+									
+								case 'title':
+									$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
+									
+									$article->{$k} = preg_replace('/^Art\.\s+/i', '', $article->{$k});
+									$article->{$k} = preg_replace('/^([IVXL]+)\.\s*([A-Z])/i', '$1.—$2', $article->{$k});
+									$article->{$k} = preg_replace('/^([IVXL]+)\.\s*-(\s*-)?\s*([A-Z])/i', '$1.—$3', $article->{$k});
+									break;
+								
 																
 								default:
 									break;							
@@ -262,6 +301,11 @@ if (isset($doc->toc))
 						}						
 					}
 					
+					if (!isset($article->epage) && isset($c->epage))
+					{
+						$article->epage = $c->epage;
+					}					
+					
 					// where does title start on the page?
 					$article->title_start = $c->spans[1][0];
 					
@@ -292,25 +336,62 @@ if (isset($doc->toc))
 						}
 					}
 					
-					$article->url = 'https://biodiversitylibrary.org/page/' . $doc->pages[$c->index]->id;
-					
-					// case
-					if (isset($article->title))
+					// BHL?
+					if (isset($doc->bhl_title_id))
 					{
-						// special handling
-						switch ($doc->bhl_title_id)
+						$article->url = 'https://biodiversitylibrary.org/page/' . $doc->pages[$c->index]->id;
+						
+						// case
+						if (isset($article->title))
 						{
-							case 206514: // Contributions of the American Entomological Institute
-								$article->title = mb_convert_case($article->title, MB_CASE_UPPER);
-								break;
-				
-							default:
-								break;
-						}
+							// special handling
+							switch ($doc->bhl_title_id)
+							{
+								case 51678: // The journal of the Asiatic Society of Bengal
+									$article->issn = '0368-1068';
+									$article->journal = 'Journal of The Asiatic Society of Bengal';
+									break;
+							
+								case 206514: // Contributions of the American Entomological Institute
+									$article->title = mb_convert_case($article->title, MB_CASE_UPPER);
+									break;
 					
+								default:
+									break;
+							}
+						}
+					}
+					else
+					{
+						// Internet Archive?
+						if (isset($doc->ia))
+						{
+							switch ($doc->ia)
+							{
+								default:
+									$article->title = mb_convert_case($article->title, MB_CASE_UPPER);
+									break;
+							}
+						
+							$article->url = 'https://archive.org/details/' . $doc->ia . '/page/n' . $c->index . '/mode/1up';
+						}
 					
 					}
 						
+				}
+				
+				// fix journal
+				if (isset($doc->bhl_title_id))
+				{
+					switch ($doc->bhl_title_id)
+					{
+						case 8648:
+							$article->journal = $doc->title;
+							break;
+							
+						default:
+							break;
+					}
 				}
 			
 				print_r($articles);
@@ -379,6 +460,15 @@ for ($i = 0; $i < ($n - 1); $i++)
 						if ($doc->parts[$contents_list[$next_index]][0]->title_start > 100)
 						{
 							// next title likely starts at the top of the page
+							switch ($doc->bhl_title_id)
+							{
+								case 150137:
+									$next_spage_index--;
+									break;
+																
+								default:
+									break;
+							}
 						}
 						else
 						{

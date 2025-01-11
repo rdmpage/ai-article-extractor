@@ -6,6 +6,9 @@
 require_once (dirname(__FILE__) . '/openai.php');
 require_once (dirname(__FILE__) . '/shared.php');
 
+require_once (dirname(__FILE__) . '/bhl.php');
+
+
 
 //----------------------------------------------------------------------------------------
 // Use ChatGPT to extract a list of structured data
@@ -52,14 +55,20 @@ $doc = json_decode($json);
 // Use ChatGPT to convert to structured data
 $doc->toc = array();
 
+$basedir = "";
+if (isset($doc->bhl_title_id))
+{
+	// We may need to fecth conettns page if we've added one manually
+	$basedir = $config['cache'] . '/' . $doc->bhl_title_id;
+}
+
 $have_contents_page = isset($doc->contents_pages) && (count($doc->contents_pages) > 0);
 
 // Do we have a contents page?
 if ($have_contents_page )
-{
+{	
 	$prompts = array();
 	$prompts[] = 'Extract a table of contents from the following text.';
-	$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
 	
 	// specific tweaks
 	
@@ -67,11 +76,55 @@ if ($have_contents_page )
 	{
 		switch ($doc->bhl_title_id)
 		{
-			case 8982:
-				$prompts[] = 'The author names appear at the start of the lines of text.';
+			case 8648:
+				$prompts[] = 'Each article title starts with the prefix "Art." and then a Roman number, please include these in the title.';
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
 				break;
 		
+			case 8982:
+				$prompts[] = 'The author names appear at the start of the lines of text.';
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
+				break;
+
+			case 150137:
+				$prompts[] = 'The author names appear at the start of the lines of text, separated from the title by a semicolon (":").';
+				$prompts[] = 'The page number appears at the end of a line of text, usually (but not always) after a series of dots(".").';
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
+				break;
+				
+			case 156824:
+				$prompts[] = 'A line begining "Number" followed by a Roman number contains the volume number and publication date. Please write date in YYYY-MM-DD format.';
+				$prompts[] = 'Each article starts on page 1.';
+				$prompts[] = 'Please add values for "volume" and "date" to the output.';
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
+				break;	
+				
+			case 135556:
+				$prompts[] = "The title appears before the list of author names.";		
+				$prompts[] = "The page number appears on the next line after the title and author names.";		
+				$prompts[] = "Remove any job titles or academic degrees from the author names.";		
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
+				break;
+
+			// Annali del Museo civico di storia naturale Giacomo Doria
+			case 43408:
+				$prompts[] = 'The author names appear at the start of the lines of text.';
+				$prompts[] = "The date of publication follows the title and is of the form (\d+.[IVX]+.\d+). Convert this to YYYY-MM-DD format.";
+				$prompts[] = "The page numbers include the start and end page.";		
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", "date", "spage", and "epage".';
+				$prompts[] = "Separate the author names as elements of an array, with each name in the form initials + surname.";
+				break;
+
+			// Boletim do Museu Paraense Emílio Goeldi
+			case 129346:
+			//case 127815: ?
+			//case 129215: ?
+				$prompts[] = "Separate the author names as elements of an array.";			
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
+				break;
+
 			default:
+				$prompts[] = 'Output the results in JSON as an array of objects with values for the keys "title", "authors", and "page".';
 				break;
 		}
 	}
@@ -79,45 +132,72 @@ if ($have_contents_page )
 	$prompts[] = 'The text to analyse is:';
 
 	$prompt = join(" ", $prompts);
+	
+	print_r($doc->contents_pages);
 
 	foreach ($doc->contents_pages as $index)
-	{
-		if (isset($doc->pages[$index]->text))
-		{
-			//$toc_from_text = extract_as_array_of_objects($prompt, $doc->pages[$index]->text);
-			$toc_from_text = extract_structured($prompt, $doc->pages[$index]->text);
-
-			print_r($toc_from_text);
+	{	
 		
-			if (is_array($toc_from_text))
-			{
-				foreach ($toc_from_text as $c)
-				{
-					// clean
+		if (!isset($doc->pages[$index]->text))
+		{
+			$page_data = get_page($doc->pages[$index]->id, false, $basedir);
+			$doc->pages[$index]->text = $page_data->Result->OcrText;
+			
+			$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
 				
-					foreach ($c as $k => $v)
-					{
-						if ($v == "")
-						{
-							unset($c->$k);
-						}
-					}
+		}				
 
-					if (isset($c->$k))
-					{
-						switch ($k)
-						{
-							case 'volume':
-								$c->{$k} = preg_replace('/(No\.|Number)\s+/i', '', $v);
-								break;
-							
-							default:
-								break;							
-						}
-					}
+		//echo $doc->pages[$index]->text; exit();
+		
+		//$toc_from_text = extract_as_array_of_objects($prompt, $doc->pages[$index]->text);
+		$toc_from_text = extract_structured($prompt, $doc->pages[$index]->text);
+
+		print_r($toc_from_text);
+	
+		if (is_array($toc_from_text))
+		{
+			foreach ($toc_from_text as &$c)
+			{
+				// clean
 				
-					$doc->toc[] = $c;
+				print_r($c);
+			
+				foreach ($c as $k => $v)
+				{
+					if ($v == "")
+					{
+						unset($c->$k);
+					}
 				}
+
+				foreach ($c as $k => $v)
+				{
+					switch ($k)
+					{
+						case 'volume':
+							$c->{$k} = preg_replace('/(No\.|Number)\s+/i', '', $v);
+							break;
+
+						case 'spage':
+							$c->page = $v;
+							break;
+
+						case 'page':
+							if (preg_match('/(.*)-(.*)/', $v, $m))
+							{
+								$c->spage = trim($m[1]);
+								$c->epage = trim($m[2]);
+								
+								$c->page = $c->spage ;
+							}							
+							break;
+						
+						default:
+							break;							
+					}
+				}
+				
+				$doc->toc[] = $c;
 			}
 		}
 	}
@@ -142,6 +222,7 @@ else
 			{
 				//$toc_from_text = extract_as_array_of_objects($prompt, $doc->pages[$index]->text);
 				$toc_from_text = extract_structured($prompt, $doc->pages[$index]->text);
+				
 				print_r($toc_from_text);
 		
 				if (is_array($toc_from_text))
@@ -177,8 +258,6 @@ else
 			}
 		}
 	}	
-
-
 }
 
 

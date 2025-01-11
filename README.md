@@ -58,6 +58,21 @@ C --> | parts2ris.php |H(export parts in RIS format)
 ```
 
 
+#### Table of contents has authors, title, date, spage and epage
+
+For example, https://www.biodiversitylibrary.org/page/63843992
+
+We can take a “punt” and assume matches are correct, but think about testing...
+
+bhl2doc
+doc2toc
+doc2text
+doc2parts
+parts2ris
+
+
+
+
 ## Reading
 
 

@@ -102,10 +102,112 @@ $titles = array(
 3943, // Proceedings of the California Academy of Sciences, just want to do 334445
 );
 
+/*
+$titles = array(
+150137, // Biodiversity, biogeography and nature conservation in Wallacea and New Guinea...
+);
+*/
+
+$titles = array(
+156824, // Schedulae Orchidianae
+);
+
+$titles = array(
+3943, // Proceedings of the California Academy of Sciences
+135556, // Journal of South African botany
+);
+
+$titles = array(
+135556, // Journal of South African botany
+);
+
+
+$items_to_do = array(); // default
+$items_to_do = array(335399,
+335398,
+335396,);
+
+
+$titles = array(
+//123995, // Advances in the biology of shrews
+211183, // Doriana
+);
+$items_to_do = array();
+
+
+$titles = array(
+135556, // Journal of South African botany
+);
+/*
+$items_to_do = array(
+335566,
+335567,
+335568,
+335569,
+
+);
+*/
+
+/*
+$titles = array(
+211407,
+);
+*/
+$titles = array(
+43408, // Annali del Museo civico di storia naturale Giacomo Doria
+);
+$items_to_do = array(336611);
+
+$titles = array(
+8648, // The Entomological magazine
+);
+$items_to_do = array(81634);
+
+$titles = array(
+7929, // Annali del Museo civico di storia naturale di Genova
+);
+$items_to_do = array(33168);
+
+$titles = array(
+9985, // Cistula entomologica
+);
+$items_to_do = array();
+
+
+$titles = array(
+8813, // Mittheilungen aus der Zoologischen Station zu Neapal
+);
+$items_to_do = array();
+
+$titles = array(
+127815, // Boletim do Museu Paraense Emílio Goeldi
+129215,
+129346,
+);
+$items_to_do = array();
+
+
+$titles = array(
+50228, // Iheringia. Série zoologia
+);
+$items_to_do = array();
+
+$titles = array(
+211183, // Doriana
+);
+$items_to_do = array();
+
+
+$titles = array(
+82295, // Bonner zoologische Monographien
+);
+$items_to_do = array(157028);
+
 
 $deep = false;
 
 $force = false;
+//$force = true;
 
 $force_title = false; // set true if title has been updated with new items
 $force_title = true;
@@ -124,10 +226,26 @@ foreach ($titles as $TitleID)
 	}
 
 	$title = get_title($TitleID, $force_title, $dir);
-
-	foreach ($title->Result->Items as $title_item)
+	
+	$items_to_fetch = array();
+	
+	// if no items specified get all
+	if (count($items_to_do) == 0)
 	{
-		$item = get_item($title_item->ItemID, $force, $dir);
+		foreach ($title->Result->Items as $title_item)
+		{
+			$items_to_fetch[] = $title_item->ItemID;
+		}
+	}
+	else
+	{
+		$items_to_fetch = $items_to_do;
+	}
+
+	foreach ($items_to_fetch as $ItemID)
+	{
+
+		$item = get_item($ItemID, $force, $dir);
 
 		/*
 		foreach ($item->Result->Parts as $part)

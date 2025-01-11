@@ -64,6 +64,12 @@ function extract_metadata($text, $keys = ["title", "authors", "journal", "volume
 	$prompt_lines[] = 'The date should be formatted as YYYY-MM-DD.';
 
 	$prompt_lines[] = 'The text to analyse is: ';
+	
+	$prompt_lines[] = 'If the text "Schedulae Orchidianae" is present that is the journal name.';
+
+	$prompt_lines[] = 'If the text "Doriana" is present that is the journal name, and the title might be in Italian.';
+
+
 
 	$prompt = " \n" . join(" ", $prompt_lines);
 	
@@ -127,6 +133,10 @@ if (isset($doc->issue_pages))
 				$keys = ["title", "authors", "journal", "volume", "number", "year"];
 				break;
 				
+			case 156824:
+				$keys = ["title", "authors", "volume"];
+				break;				
+				
 			default:
 				$keys = ["title", "authors", "journal", "volume", "issue", "date"];
 				break;
@@ -183,6 +193,8 @@ if (isset($doc->issue_pages))
 								foreach ($article->{$k} as &$value)
 								{
 									$value = preg_replace('/\.(\p{Lu})/u', ". $1", $value);
+									$value = preg_replace('/\s+\([^\)]+\)/u', "", $value);
+									$value = preg_replace('/\s+$/u', "", $value);
 									$value = mb_convert_case($value, MB_CASE_TITLE);
 								}
 								break;
@@ -192,17 +204,21 @@ if (isset($doc->issue_pages))
 								{
 									$article->{$k} = arabic($article->{$k});
 								}
+
+								$article->{$k} = preg_replace('/No\.\s*/i', '', $article->{$k});
+								
 								break;
 
 							case 'issue':
 								$article->{$k} = preg_replace('/Nos?\.\s*/', '', $article->{$k});
+								$article->{$k} = preg_replace('/N\.\s*/', '', $article->{$k});
 								$article->{$k} = preg_replace('/\s+and\s+/', '-', $article->{$k});
 								$article->{$k} = trim($article->{$k});
 								break;
 								
 							// optional
 							case 'title':
-								//$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
+								$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
 								break;
 						
 							default:

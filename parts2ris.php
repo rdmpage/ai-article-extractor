@@ -114,9 +114,11 @@ if (isset($doc->parts))
 							}
 							break;
 							
+							/*
 						case 'pageids':
 							echo $field_to_ris_key[$k] . '  - ' . join(',', $v) . "\n";
 							break;
+							*/
 				
 						default:
 							break;

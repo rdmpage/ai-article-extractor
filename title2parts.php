@@ -42,7 +42,6 @@ function extract_structured($prompt, $text, $force = false)
 	}
 	
 	return $obj;
-
 }
 
 //----------------------------------------------------------------------------------------

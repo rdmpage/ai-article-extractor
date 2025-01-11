@@ -35,7 +35,11 @@ function openai_call($url, $data)
 	$info = curl_getinfo($ch);
 	$http_code = $info['http_code'];
 	
-	// print_r($info);
+	if (0)
+	{
+		print_r($info);
+		echo $response;
+	}
 		
 	curl_close($ch);
 	
@@ -78,6 +82,7 @@ function conversation ($prompt, $text)
 	$summary = '';
 			
 	$model = "gpt-3.5-turbo";
+	$model = "gpt-4o-mini";
 	
 	$data = new stdclass;
 	$data->model = $model;
@@ -95,7 +100,9 @@ function conversation ($prompt, $text)
 	
 	$data->messages[] = $message;
 	
-	//print_r($data);
+	// print_r($data);
+	
+	// echo json_encode($data);
 	
 	$response = openai_call($config['openai_completions'], $data);
 	
@@ -317,5 +324,6 @@ if (0)
 
 	echo $response . "\n";
 }
+
 
 ?>

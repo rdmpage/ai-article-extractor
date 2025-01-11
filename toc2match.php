@@ -3,6 +3,8 @@
 // Check whether titles in TOC match those on text pages inside doc, these matches are
 // candidates for parts
 
+ini_set('memory_limit', '-1');
+
 require_once (dirname(__FILE__) . '/swa.php');
 
 $filename = '';
@@ -20,7 +22,7 @@ $json = file_get_contents ($filename);
 
 $doc = json_decode($json);
 
-$theshold = 0.8;
+$theshold = 0.4;
 
 if (isset($doc->toc))
 {

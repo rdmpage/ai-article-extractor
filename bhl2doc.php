@@ -7,7 +7,7 @@ require_once (dirname(__FILE__) . '/shared.php');
 require_once (dirname(__FILE__) . '/parse-volume.php');
 
 //----------------------------------------------------------------------------------------
-function bhl_item_to_doc($item_data)
+function bhl_item_to_doc($item_data, $redo_ocr = false)
 {
 	global $basedir;
 
@@ -27,6 +27,9 @@ function bhl_item_to_doc($item_data)
 	// BHL specific stuff we might need
 	$doc->bhl_title_id = $item_data->Result->PrimaryTitleID;
 	$doc->bhl_item_id = $item_data->Result->ItemID;
+	
+	// IA
+	$doc->ia = $item_data->Result->SourceIdentifier;
 
 	$doc->title = '';
 	$doc->volume = $item_data->Result->Volume;
@@ -38,6 +41,11 @@ function bhl_item_to_doc($item_data)
 	{
 		$doc->volume = $result->volume[0];
 		
+		if (isset($result->{'issue'}))
+		{
+			$doc->issue = $result->{'issue'}[0];
+		}
+				
 		if (isset($result->{'collection-title'}))
 		{
 			$doc->series = $result->{'collection-title'}[0];
@@ -81,7 +89,7 @@ function bhl_item_to_doc($item_data)
 				
 				$doc_page->text = $page_data->Result->OcrText;
 				
-				if (1)
+				if ($redo_ocr)
 				{
 					$doc_page->text = ocr_bhl_page($Page->PageID);
 				}
@@ -106,7 +114,7 @@ function bhl_item_to_doc($item_data)
 				$page_data = get_page($Page->PageID, false, $basedir);
 				$doc_page->text = $page_data->Result->OcrText;
 
-				if (1)
+				if ($redo_ocr)
 				{
 					$doc_page->text = ocr_bhl_page($Page->PageID);
 				}
@@ -121,7 +129,7 @@ function bhl_item_to_doc($item_data)
 				$page_data = get_page($Page->PageID, false, $basedir);
 				$doc_page->text = $page_data->Result->OcrText;
 
-				if (1)
+				if ($redo_ocr)
 				{
 					$doc_page->text = ocr_bhl_page($Page->PageID);
 				}
@@ -206,12 +214,11 @@ function bhl_item_to_doc($item_data)
 	
 		$doc->pages[] = $doc_page;
 		$doc->page_count++;
-
 	}
 	
 	
 	// hack
-	if (isset( $doc->id_to_page[37171011]))
+	if (isset($doc->id_to_page[37171011]))
 	{
 		$PageID = 37171011;
 		
@@ -222,7 +229,7 @@ function bhl_item_to_doc($item_data)
 		
 		$doc->pages[$page_index]->text = $page_data->Result->OcrText;
 		
-		if (1)
+		if ($redo_ocr)
 		{
 			$doc->pages[$page_index]->text = ocr_bhl_page($PageID, 'zh-cn');
 		}
@@ -230,11 +237,49 @@ function bhl_item_to_doc($item_data)
 		$doc->contents_pages[] = $page_index;
 	}
 	
+	// title specific hacks
+	
+	// skip past start of issue (typically a cover page) to start of text
+	if ($doc->bhl_title_id == 156824)
+	{
+		// skip past issue page to start of text
+		$issues = $doc->issue_pages;
+		$text_start = array();
+		
+		foreach ($doc->issue_pages as $index)
+		{
+			$n = $index + 6;
+			$i = $index;
+			$page_index = 0;
+			while ($i < $n && !$page_index)
+			{
+				if (isset($doc->pages[$i]->number))
+				{
+					$page_index = $i;
+				}
+				$i++;
+			}
+			
+			if ($page_index)
+			{
+				$text_start[] = $page_index;
+				
+				// get text
+				$page_data = get_page($doc->pages[$page_index]->id, false, $basedir);
+		
+				$doc->pages[$page_index]->text = $page_data->Result->OcrText;
+			}
+		}
+		
+		$doc->issue_pages = $text_start;
+	}
+	
 	return $doc;
 }
 
 //----------------------------------------------------------------------------------------
 
+$redo_ocr = false;
 
 $TitleID = 130490; // Pan Pacific Entomologist
 $items = array(254683);
@@ -420,6 +465,12 @@ if (1)
 		334739,
 		334829,
 		);
+		
+	$items=array(
+		334655,
+	);
+		
+		
 
 }
 
@@ -441,6 +492,210 @@ if (0)
 
 	$items = array();
 }
+
+if (1)
+{
+	// book with chapters, can treat as journal, ChatGPT messes up ordering of page numbers
+	$TitleID = 150137; // Biodiversity, biogeography and nature conservation in Wallacea
+	$items = array(253723);
+	
+	$items = array(335166); // v.4
+	$items = array(286993); // v.3
+	$items = array(253723); // v.1
+}
+
+/*
+if (1)
+{
+	$TitleID = 130490;
+	$items = array(254618);
+}
+*/
+
+
+if (1)
+{
+	$TitleID = 156824; // Schedulae Orchidianae;
+	$items = array(263014);
+}
+
+if (1)
+{
+	$TitleID = 135556; // Journal of South African botany
+	$items = array(335245); // 8, text out of alignment
+	/*
+	$items = array(335236,
+335237,
+335238,
+335239,
+335240,
+335241,
+335242,
+335243,
+335244); 
+*/
+
+$items = array(335244);
+$items = array(
+//335399,
+//335398,
+//335396,
+
+335243,
+
+);
+}
+
+if (1)
+{
+	$TitleID = 123995; // Advances in the biology of shrews
+	$items = array();
+}
+
+if (1)
+{
+	$TitleID = 211183; // Doriana
+	$items = array(335676);
+}
+
+
+
+if (1)
+{
+	$TitleID = 135556; // Journal of South African botany
+	$items = array(335792);
+	$redo_ocr = true;
+}
+
+
+if (0)
+{
+	$TitleID = 211407; // Annals of the Cape provincial museums
+	$items = array(336153);
+	$redo_ocr = true;
+}
+
+if (1)
+{
+	$TitleID = 43408; // Annali del Museo civico di storia naturale Giacomo Doria
+	$items = array(
+		//336460,
+		//336483,
+		//336492, // *
+		//336450, // *
+		//336446, // *
+		
+		//106471,
+		/*
+		336548,
+		336541,
+		336527,
+		336519,
+		*/
+		
+		//336611,
+		
+		33168,
+		);
+	$redo_ocr = true;
+}
+
+if (0)
+{
+	$TitleID = 8648; // The Entomological magazine
+	$items = array(81634);
+}
+
+if (1)
+{
+	$TitleID = 7929; // Annali del Museo civico di storia naturale di Genova
+	$items = array(33168);
+}
+
+
+if (1)
+{
+	$TitleID = 9985; 
+	$items = array(40224);
+}
+
+
+if (1)
+{
+	$TitleID = 8813; 
+	$items = array(182419);
+}
+
+if (1)
+{
+	$TitleID = 129346; 
+	$items = array(
+	224453,
+223982,
+224093,
+223939,
+225309,
+225331,
+224092,
+230756,
+223940,
+225387,
+224426,
+224521,
+225327,
+225347,
+225301,
+224454,
+224921,
+224867,
+224924,
+224834,
+224904,
+225299);
+	
+	
+}
+
+if (1)
+{
+$TitleID = 51678; 
+	$items = array(
+	123385
+	);
+}
+
+if (1)
+{
+$TitleID = 50228; 
+	$items = array(
+	109985
+	);
+}
+
+
+
+if (1)
+{
+$TitleID = 211183; 
+	$items = array(
+	335637,
+335662,
+335700,
+338628,
+
+	);
+}
+
+if (1)
+{
+$TitleID = 82295; 
+	$items = array(
+	157028
+
+	);
+}
+
+
 
 
 $force = true;
@@ -502,7 +757,7 @@ foreach ($items as $ItemID)
 	if (!file_exists($output_filename) || $force)
 	{
 
-		$doc = bhl_item_to_doc($item_data);
+		$doc = bhl_item_to_doc($item_data, $redo_ocr);
 	
 		$doc->title = $title;
 	
