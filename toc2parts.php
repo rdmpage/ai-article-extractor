@@ -54,6 +54,8 @@ function extract_metadata($text, $title_hint = '', $keys = ["title", "authors"])
 	
 	$prompt_lines = array();
 
+	$prompt_lines[] = 'You are an expert in reading the first page of a schoalrly article and extracting the key bibliographic information.';
+	
 	$prompt_lines[] = 'Extract metadata for the article that starts on this page.';
 	
 	if ($title_hint != '')
@@ -68,6 +70,8 @@ function extract_metadata($text, $title_hint = '', $keys = ["title", "authors"])
 	$prompt_lines[] = 'The "authors" field should be an array.';	
 	
 	$prompt_lines[] = 'If title has Roman number as a prefix please retain that Roman number.';	
+
+	$prompt_lines[] = 'Be sure not to conflate the journal, volume, and page numbers with the title of the article.';	
 	
 
 	$prompt_lines[] = 'The text to analyse is: ';
@@ -104,6 +108,15 @@ else
 $json = file_get_contents ($filename);
 
 $doc = json_decode($json);
+
+if (isset($doc->pagenum_to_page))
+{
+	$doc->pagenum_to_page = (array)$doc->pagenum_to_page;
+}
+
+// settings
+$make_title_uppercase = false;
+//$make_title_uppercase = true;
 
 $doc->parts = array();
 
@@ -147,19 +160,18 @@ if (isset($doc->toc))
 				{
 					switch ($doc->bhl_title_id)
 					{
-						case 206514:
-							// contents of a book, or journal with minimal metadara on page
-							$keys = ["title", "authors"]; 
-							break;
-	
-						case 150137: // Contributions of the American Entomological Institute
-							$keys = ["title", "authors"];
-							break;
-							
+								
 						case 150137: // Biodiversity, biogeography and nature conservation in Wallacea and New Guinea
 							$keys = ["title", "authors", "pages"];
 							break;
-					
+							
+						case 8068: // Anales de la Sociedad Española de Historia Natural
+						case 10241: // Revista do Museu Paulista
+						case 150137: // Contributions of the American Entomological Institute
+						case 206514:
+							$keys = ["title", "authors"];
+							break;
+
 						default:
 							// journal with lots of metadata on page	
 							$keys = ["title", "authors", "journal", "volume", "issue", "pages", "year"]; 			
@@ -247,7 +259,14 @@ if (isset($doc->toc))
 								break;
 									
 								case 'title':
-									$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
+									if ($make_title_uppercase)
+									{
+										$article->{$k} = mb_convert_case($v, MB_CASE_UPPER);
+									}
+									else
+									{
+										//$article->{$k} = mb_convert_case($v, MB_CASE_TITLE);
+									}
 									
 									$article->{$k} = preg_replace('/^Art\.\s+/i', '', $article->{$k});
 									$article->{$k} = preg_replace('/^([IVXL]+)\.\s*([A-Z])/i', '$1.—$2', $article->{$k});
@@ -301,6 +320,11 @@ if (isset($doc->toc))
 						}						
 					}
 					
+					if (!isset($article->spage) && isset($c->spage))
+					{
+						$article->spage = $c->spage;
+					}					
+
 					if (!isset($article->epage) && isset($c->epage))
 					{
 						$article->epage = $c->epage;
@@ -347,6 +371,10 @@ if (isset($doc->toc))
 							// special handling
 							switch ($doc->bhl_title_id)
 							{
+								case 8068: // Anales de la Sociedad Española de Historia Natural
+									$article->issn = '0210-5160';
+									break;
+							
 								case 51678: // The journal of the Asiatic Society of Bengal
 									$article->issn = '0368-1068';
 									$article->journal = 'Journal of The Asiatic Society of Bengal';
@@ -355,6 +383,11 @@ if (isset($doc->toc))
 								case 206514: // Contributions of the American Entomological Institute
 									$article->title = mb_convert_case($article->title, MB_CASE_UPPER);
 									break;
+									
+								case 212322: // Memorie della Società entomologica italiana
+									$article->journal = 'Memorie della Società Entomologica Italiana';
+									$article->issn = '2282-1228';
+									break;									
 					
 								default:
 									break;
@@ -446,11 +479,11 @@ for ($i = 0; $i < ($n - 1); $i++)
 			{
 				$next_spage = $doc->parts[$contents_list[$next_index]][0]->spage;
 			
-				if (isset($doc->pagenum_to_page->{$next_spage}))
+				if (isset($doc->pagenum_to_page[$next_spage]))
 				{
 					// to do: handle having multiple pages with the same number
 					
-					$next_spage_index = $doc->pagenum_to_page->{$next_spage}[0];
+					$next_spage_index = $doc->pagenum_to_page[$next_spage][0];
 					
 					// need to figure out if article ends on same page as next article, 
 					// or before
@@ -505,9 +538,12 @@ for ($i = 0; $i < ($n - 1); $i++)
 						$article->epage = $doc->pages[$next_spage_index]->number;
 						
 						// sanity check
-						if ($article->epage < $article->spage)
+						if (isset($article->spage))
 						{
-							unset($article->epage);
+							if ($article->epage < $article->spage)
+							{
+								unset($article->epage);
+							}
 						}
 					}
 				}
