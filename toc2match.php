@@ -22,6 +22,11 @@ $json = file_get_contents ($filename);
 
 $doc = json_decode($json);
 
+if (isset($doc->pagenum_to_page))
+{
+	$doc->pagenum_to_page = (array)$doc->pagenum_to_page;
+}
+
 $theshold = 0.4;
 
 if (isset($doc->toc))
@@ -32,14 +37,16 @@ if (isset($doc->toc))
 		
 		if (isset($c->page) && isset($c->title))
 		{
+			$c->score = 0;
+		
 			$page_number = $c->page; // for now assume is single number
 			$page_number = preg_replace('/^(\d+|[ivx]+)\s*(-.*)$/', '$1', $page_number);
 			
 			echo "page_number $page_number\n";
 			
-			if (isset($doc->pagenum_to_page->{$page_number}))
+			if (isset($doc->pagenum_to_page[$page_number]))
 			{
-				foreach ($doc->pagenum_to_page->{$page_number} as $index)
+				foreach ($doc->pagenum_to_page[$page_number] as $index)
 				{
 					if (isset($doc->pages[$index]->text))
 					{						
@@ -68,17 +75,26 @@ if (isset($doc->toc))
 						
 						print_r($alignment);
 						
-						$c->alignment = join("\n", $alignment->text);
-						$c->spans = $alignment->spans;
-						$c->score = $alignment->score;
 						
-						if ($c->score > $theshold)
+						if ($alignment->score > $c->score)
 						{
-							$c->index = $index;
+							$c->alignment = join("\n", $alignment->text);
+							$c->spans = $alignment->spans;
+						
+							$c->score = $alignment->score;
+						
+							if ($c->score > $theshold)
+							{
+								$c->index = $index;
+							}
 						}
 					}
 				}
 			}
+			
+			print_r($c);
+			
+			//exit();
 		}
 	}
 }
