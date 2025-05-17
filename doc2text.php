@@ -23,6 +23,13 @@ $json = file_get_contents ($filename);
 
 $doc = json_decode($json);
 
+if (isset($doc->pagenum_to_page))
+{
+	$doc->pagenum_to_page = (array)$doc->pagenum_to_page;
+}
+
+// ensure
+
 $basedir = $config['cache'] . '/' . $doc->bhl_title_id;
 
 // Page flagged a having contents, make sure it has text
@@ -34,16 +41,17 @@ if ($have_contents_page )
 {	
 	foreach ($doc->contents_pages as $index)
 	{	
-		if (!isset($doc->pages[$index]->text))
+		if (!isset($doc->pages[$index]->text) || $force)
 		{
 			$page_data = get_page($doc->pages[$index]->id, $force, $basedir);
-			$doc->pages[$index]->text = $page_data->Result->OcrText;					
+			$doc->pages[$index]->text = $page_data->Result->OcrText;	
 		
 			// OCR?
 			if (isset($doc->bhl_title_id))
 			{
 				switch ($doc->bhl_title_id)
 				{
+					case 10241:
 					case 150137:
 					case 135556:
 						if (0)
@@ -72,14 +80,19 @@ if (isset($doc->toc))
 	{
 		//print_r($c);
 		
+		//echo gettype($doc->pagenum_to_page) . "\n";
+		//print_r($doc->pagenum_to_page);
+		
 		if (isset($c->page))
 		{
 			$page_number = $c->page; // for now assume is single number
 			$page_number = preg_replace('/^(\d+|[ivx]+)\s*(-.*)$/', '$1', $page_number);
+			
+			//print_r($doc->pagenum_to_page);
 		
-			if (isset($doc->pagenum_to_page->{$page_number}))
+			if (isset($doc->pagenum_to_page[$page_number]))
 			{
-				foreach ($doc->pagenum_to_page->{$page_number} as $index)
+				foreach ($doc->pagenum_to_page[$page_number] as $index)
 				{				
 					if (!isset($doc->pages[$index]->text))
 					{
@@ -93,13 +106,18 @@ if (isset($doc->toc))
 						{
 							switch ($doc->bhl_title_id)
 							{
+								case   7383:
 								case   7929:
-								case   8648:
+								case   8068:
+								case   8648:								
 								case   8982:
-								case   9985;
-								case  43408:
+								case   9985:
+								case  10241:
+								case  43408:								
 								case 135556:
 								//case 150137:
+								case 103155:
+								case 212322:
 									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
 									break;
 									
@@ -114,7 +132,12 @@ if (isset($doc->toc))
 					}
 				}
 			}
+			else
+			{
+				echo "$page_number not set in doc->pagenum_to_page\n";
+			}
 		}
+
 	}
 }
 
