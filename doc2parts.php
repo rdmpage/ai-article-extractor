@@ -24,6 +24,11 @@ $json = file_get_contents ($filename);
 
 $doc = json_decode($json);
 
+if (isset($doc->pagenum_to_page))
+{
+	$doc->pagenum_to_page = (array)$doc->pagenum_to_page;
+}
+
 $basedir = $config['cache'] . '/' . $doc->bhl_title_id;
 
 
@@ -98,9 +103,9 @@ if (isset($doc->toc))
 		$theshold = 0.8;
 		
 		// sanity check and BHL URL
-		if (isset($doc->pagenum_to_page->{$page_number}))
+		if (isset($doc->pagenum_to_page[$page_number]))
 		{
-			foreach ($doc->pagenum_to_page->{$page_number} as $index)
+			foreach ($doc->pagenum_to_page[$page_number] as $index)
 			{
 				if (isset($doc->pages[$index]->text))
 				{						
