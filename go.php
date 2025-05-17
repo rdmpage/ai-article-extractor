@@ -172,6 +172,57 @@ if (1)
 }
 
 
+$default_workflow = '';
+
+if (1)
+{
+	$TitleID = 103155; // Serket
+	$items = array(
+183520,
+183522,
+183538,
+183516,
+183529,
+183542,
+199139,
+199136,
+199140,
+199137,
+207090,
+342001,
+341997,
+342011,
+342195,
+342095,
+342161,
+342228,
+342199,
+342101,
+342690,
+342722,
+);
+	$default_workflow = 'toc'; // important as otherwise we often use the wrong workflow
+
+}
+
+// Memorie della Società entomologica italiana
+if (1)
+{
+	$TitleID = 212322; 
+$items = array(
+//340868,
+//340910,
+//341635,
+//341984,
+342159,
+//342009,
+);
+	$default_workflow = 'toc'; // important as otherwise we often use the wrong workflow
+}
+
+
+
+
 
 $basedir = $config['cache'] . '/' . $TitleID;
 
@@ -210,19 +261,28 @@ foreach ($items as $item)
 
 	$json = file_get_contents($docfilename );
 	$obj = json_decode($json);
-		
-	if (isset($obj->issue_pages) && count($obj->issue_pages) > 0)
+	
+	if ($default_workflow != '')
 	{
-		$workflow[$item] = 'issues';
+		$workflow[$item] = $default_workflow;
 	}
 	else
 	{
-		$workflow[$item] = 'toc';
-	}
-	
-	if (isset($obj->article_pages) && count($obj->article_pages) > 0)
-	{
-		$workflow[$item] = 'articles';
+		// try to figure out the work flow
+		
+		if (isset($obj->issue_pages) && count($obj->issue_pages) > 0)
+		{
+			$workflow[$item] = 'issues';
+		}
+		else
+		{
+			$workflow[$item] = 'toc';
+		}
+		
+		if (isset($obj->article_pages) && count($obj->article_pages) > 0)
+		{
+			$workflow[$item] = 'articles';
+		}
 	}
 
 }

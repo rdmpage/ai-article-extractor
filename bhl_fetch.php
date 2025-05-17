@@ -204,6 +204,61 @@ $titles = array(
 $items_to_do = array(157028);
 
 
+$titles = array(
+10241, // Revista do Museu Paulista v 1-12 1895-1920
+107243, // Revista do Museu Paulista v 13-22, 1922-1938
+118995, // Notas preliminares; editadas pela redaccão da Revista do Museu 1-2, 1907-1922
+);
+
+$titles = array(
+8068, // Anales de la Sociedad Española de Historia Natural
+);
+
+$items_to_do = array();
+
+$titles = array(
+211183, // Doriana
+);
+$items_to_do = array(
+338969,
+339087,
+339061,
+339066,
+339068,
+339124
+);
+
+
+
+$titles = array(
+7383, // Records of the Albany Museum
+);
+
+$items_to_do = array();
+
+$titles = array(
+51678, // The journal of the Asiatic Society of Bengal
+);
+
+$titles = array(
+7396, // South African journal of natural history
+);
+
+$items_to_do = array();
+
+$titles = array(
+
+212322, // Memorie della Società entomologica italiana
+);
+
+$titles = array(
+103155, // Serket = Sarkat
+);
+
+$items_to_do = array(342841,
+	342883);
+
+
 $deep = false;
 
 $force = false;

@@ -2,7 +2,7 @@
 
 // BHL document might have multiple articles/issues starting with page 1 but these
 // might not be flagged as such, e.g. https://www.biodiversitylibrary.org/item/338628
-// Simple have is to make every page 1 the start of an issue
+// Simple fix is to make every page 1 the start of an issue
 
 require_once (dirname(__FILE__) . '/bhl.php');
 

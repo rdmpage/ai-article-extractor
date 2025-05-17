@@ -88,6 +88,15 @@ if (isset($doc->parts))
 					switch ($k)
 					{
 						case 'title':
+							if (0)
+							{
+								$v = mb_convert_case($v, MB_CASE_UPPER);
+							}						
+							
+							echo $field_to_ris_key[$k] . '  - ' . trim($v) . "\n";													
+							break;
+							
+							
 						case 'journal':
 						case 'volume':
 						case 'issue':

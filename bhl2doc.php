@@ -281,6 +281,7 @@ function bhl_item_to_doc($item_data, $redo_ocr = false)
 
 $redo_ocr = false;
 
+
 $TitleID = 130490; // Pan Pacific Entomologist
 $items = array(254683);
 
@@ -695,6 +696,94 @@ $TitleID = 82295;
 	);
 }
 
+
+
+
+if (1)
+{
+	// Revista do Museu Paulista v 1-12 1895-1920
+	$TitleID = 10241; 
+		$items = array(
+			40840
+		);
+	$redo_ocr = true;		
+}
+
+if (1)
+{
+	// Anales de la Sociedad Española de Historia Natural
+	$TitleID = 8068; 
+		$items = array(
+			84518
+		);
+	$redo_ocr = true;		
+}
+
+if (1)
+{
+	// Anales de la Sociedad Española de Historia Natural
+	$TitleID = 211183; 
+		$items = array(
+			338969,
+			339087,
+			339061,
+			339066,
+			339068,
+			339124
+		);
+	$redo_ocr = false;		
+}
+
+if (1)
+{
+	$TitleID = 7383; 
+	$items = array();
+	$redo_ocr = true;
+}
+
+if (1)
+{
+	$TitleID = 51678; 
+	$items = array(114440);
+	$redo_ocr = true;
+}
+
+
+// South African journal of natural history
+if (1)
+{
+	$TitleID = 7396; 
+	$items = array();
+	$redo_ocr = true;
+}
+
+// Memorie della Società entomologica italiana
+if (1)
+{
+	$TitleID = 212322; 
+	$items = array(
+	//342210,
+	
+342159
+	
+	
+	);
+	$redo_ocr = true;
+}
+
+if (0)
+{
+	$TitleID = 103155; // // Serket = Sarkat
+	$items = array(
+	342841,
+	342883,
+	
+	
+	
+	);
+	$redo_ocr = false;
+	$redo_ocr = true;
+}
 
 
 
