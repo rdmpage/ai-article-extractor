@@ -1,6 +1,6 @@
 <?php
 
-// Given a comma-delimited litst of page numbers and corresponding
+// Given a comma-delimited list of page numbers and corresponding
 // BHL PageIDs we add missing page numbers to an item
 // Can also add contents pages (zero-based index of page(s) with contents)
 
@@ -1592,6 +1592,8 @@ $contents=array(
 );
 }
 
+
+
 if (1)
 {
 // https://www.biodiversitylibrary.org/item/183520#page/3/mode/1up
@@ -1888,6 +1890,17 @@ $contents=array(
 386,
 457,
 );
+}
+
+if (1)
+{
+$ItemID=49300;
+$pages='215,13918713
+309,13918809
+333,13918835
+397,13918907
+425,13918939
+1,13918522';
 }
 
 

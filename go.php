@@ -220,7 +220,86 @@ $items = array(
 	$default_workflow = 'toc'; // important as otherwise we often use the wrong workflow
 }
 
+// Journal of the Entomological Society of Ontario
+if (1)
+{
+	$TitleID = 79636;	
+	$items = array(
+		//183885, manualy add contents page number
+		//183882, manualy add contents page number
+			
+		151942,
+		152492,
+		152491,
+		151900,
+		151897,
+		151895,
+		152495,
+		151901,
+		151909,
+		152488,
+		208605,
+		252458,
+		252814,
+		344642,
+		345053,
+		345056,
+		345059,
+		345063,
+	);
+	
+	$items=array(208605,
+		252458, // fail
+		252814,
+		344642,
+		345053,
+		345056,
+		345059,
+		345063,);
+		
+	$items=array(345056);
+	
+	$default_workflow = 'toc'; 
+}
 
+
+// Records Australian Museum
+if (1)
+{
+	$TitleID = 61893;
+
+	$items = array(
+		126052,
+		126428
+	);
+	
+	$items = array(
+		126684,
+		126685,
+		126850,
+		129803,
+		126849,
+		126407,
+		126366,
+		126360,
+		126382,
+		126381,
+		179342,
+	);
+	
+	$items = array(
+127058,
+127056,
+126147,
+127008,
+127007,
+127009,
+127057,
+127010,
+126851,
+);	
+	
+}
 
 
 

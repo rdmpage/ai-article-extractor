@@ -258,6 +258,132 @@ $titles = array(
 $items_to_do = array(342841,
 	342883);
 
+//----------------------------------------------------------------------------------------
+$titles = array(
+	9612, // Bollettino della Società entomologica italiana
+);
+$items_to_do = array();
+
+
+//----------------------------------------------------------------------------------------
+
+// Chinese herp journals
+
+$titles = array(
+	40011, // Chinese herpetological research
+	53832, // Liangqi baxing dongwu yanjiu = Acta herpetologica Sinica
+	53833, // Liangqi baxing dongwu yanjiu = Acta herpetologica Sinica
+	2804, // Asiatic herpetological research
+	46858, // She wa yan jiu = Chinese herpetological research
+);
+$items_to_do = array();
+
+//----------------------------------------------------------------------------------------
+
+$titles = array(
+	9494, // Papers and proceedings of the Royal Society of Tasmania
+);
+$items_to_do = array(
+//342695,
+343300,
+);
+
+
+
+//----------------------------------------------------------------------------------------
+$titles = array(
+	213792, 213791 // Manual of Afrotropical Diptera
+);
+$items_to_do = array();
+
+//----------------------------------------------------------------------------------------
+$titles = array(
+	
+214601
+);
+
+
+//----------------------------------------------------------------------------------------
+$titles = array(
+79636, // Journal of the Entomological Society of Ontario
+);
+
+//----------------------------------------------------------------------------------------
+
+
+$titles = array(
+11933, // Annales de la Société entomologique de Belgique
+);
+
+$titles = array(
+6919, // Arkiv för zoologi
+);
+
+
+$titles = array(
+21727, // Results of the Swedish zoological expedition to Egypt and the White Nile, 1901, under the direction of L.A. Jägerskiöld
+);
+
+$titles = array(
+154474, // The Coral Triangle : the 2011 Hearst Philippine Biodiversity Expedition
+);
+
+$titles = array(
+16176,
+16143,
+);
+
+
+$titles = array(
+98543
+);
+
+$titles = array(
+14924
+);
+
+$titles = array(
+122512, // Memórias do Instituto Butantan
+);
+
+$titles = array(
+46370, // Revista chilena de entomología
+);
+
+$titles = array(
+58209,
+169051,
+43765,
+);
+
+$titles = array(
+58209,
+169051,
+43765,
+);
+
+$titles = array(78760);
+
+//150348,150351
+
+$titles = array(
+	159712, // Memorie della Società italiana di scienze naturali e del Museo civico di storia naturale di Milano
+);
+
+// Deutsche entomologische Zeitschrift Iris
+$titles = array(
+12260,
+12276,
+);
+
+// Horae Societatis Entomologicae Rossicae, variis sermonibus in Rossia usitatis editae
+$titles = array(
+87655,
+//$items=array(46209)
+);
+
+
+//----------------------------------------------------------------------------------------
 
 $deep = false;
 

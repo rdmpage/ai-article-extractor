@@ -62,6 +62,9 @@ function extract_metadata($text, $keys = ["title", "authors", "journal", "volume
 	$prompt_lines[] = 'Output the results in JSON as an array of objects.';
 	$prompt_lines[] = 'The object should following keys (where a value is available): "' . join(",", $keys) . '".';	
 	$prompt_lines[] = 'The "authors" field should be an array.';	
+	
+	$prompt_lines[] = 'Be careful not to confused numbers for plates with page numbers.';
+	$prompt_lines[] = 'Plates typically use Roman numbers, do NOT use these for page numbers';
 
 	$prompt_lines[] = 'The date should be formatted as YYYY-MM-DD.';
 
@@ -145,6 +148,7 @@ if (isset($doc->article_pages))
 				break;
 
 			case 12920: // Malacologia
+			case 61893: // Records of the South Australian Museum
 				$keys = ["title", "authors", "journal", "volume", "issue", "year", "pages"];
 				break;
 				
@@ -261,7 +265,9 @@ if (isset($doc->article_pages))
 					{
 						$article->spage = $article->pages;
 					}
-				}	
+				}
+				
+				// what if we don't have pages?	
 				
 				
 				$article->url = 'https://biodiversitylibrary.org/page/' . $doc->pages[$index]->id;
@@ -276,6 +282,29 @@ if (isset($doc->article_pages))
 						{
 							$article->issue = $article->number;
 							unset($article->number);
+						}
+						break;
+						
+					case 61893: // RecordsSouthAus
+						$article->journal = $doc->title;
+						$article->year = $doc->year;
+						$article->volume = $doc->volume;
+						//if (!isset($article->spage))
+						{
+							// get the current page number 
+							if (isset($doc->pages[$index]->number))
+							{
+								$article->spage = $doc->pages[$index]->number;
+								
+								// try to extend it, assume pages are numbered consecuitively,
+								// and articles are separated by un-numbered pages
+								$page_index = $index;
+								while (isset($doc->pages[$page_index]->number))
+								{
+									$article->epage = $doc->pages[$page_index]->number;
+									$page_index++;
+								}
+							}
 						}
 						break;
 				

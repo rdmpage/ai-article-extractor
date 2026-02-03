@@ -281,6 +281,8 @@ function bhl_item_to_doc($item_data, $redo_ocr = false)
 
 $redo_ocr = false;
 
+$fetch_all_text = false;
+
 
 $TitleID = 130490; // Pan Pacific Entomologist
 $items = array(254683);
@@ -762,11 +764,9 @@ if (1)
 {
 	$TitleID = 212322; 
 	$items = array(
-	//342210,
-	
-342159
-	
-	
+//341984
+341635,340910
+
 	);
 	$redo_ocr = true;
 }
@@ -785,6 +785,287 @@ if (0)
 	$redo_ocr = true;
 }
 
+
+// Bollettino della Società entomologica italiana
+if (1)
+{
+	$TitleID = 9612; 
+	$items = array(
+		342160,
+	);
+	$redo_ocr = true;
+}
+
+// Papers and proceedings of the Royal Society of Tasmania
+if (1)
+{
+	$TitleID = 9494;
+	$items = array(
+		//342695,
+		343300,
+		);
+}
+
+
+// 213792, 213791 // Manual of Afrotropical Diptera
+if (1)
+{
+	$TitleID = 213792;
+	$items = array(
+		343512
+		);
+}
+
+// Papers and proceedings of the Royal Society of Tasmania (2024)
+if (1)
+{
+	$TitleID = 214601;	
+	$items = array();
+}
+
+// Journal of the Entomological Society of Ontario
+if (1)
+{
+	$TitleID = 79636;	
+	$items = array(
+		//183885,
+		//183882,
+		
+151942,
+152492,
+152491,
+151900,
+151897,
+151895,
+152495,
+151901,
+151909,
+152488,
+
+208605,
+252458,
+252814,
+344642,
+345053,
+345056,
+345059,
+345063,
+
+
+		);
+		
+		$items=array(
+208605,
+		252458,
+		252814,
+		344642,
+		345053,
+		345056,
+		345059,
+		345063,
+		
+		);
+		
+		$items=array(345056);
+		
+		
+		$redo_ocr = true;
+}
+
+
+// Annales de la Société entomologique de Belgique
+if(1)
+{
+	$TitleID = 11933;	
+	$items = array();
+	$redo_ocr = true;
+}
+
+// Arkiv för zoologi
+if(1)
+{
+	$TitleID = 6919;	
+	$items = array();
+	$redo_ocr = true;
+};
+
+// Results of the Swedish zoological expedition to Egypt and the White Nile, 1901, under the direction of L.A. Jägerskiöld
+if(1)
+{
+	$TitleID = 21727;	
+	$items = array();
+	$redo_ocr = true;
+};
+
+if (1) // Records Australian Museum
+{
+	$TitleID = 61893;
+	
+	$items = array(125955); // not all pages have numbers
+	$items = array(125986);
+	$items = array(126201);
+	
+	$items = array(126145);
+	
+	$items = array(126428);
+	$items = array(
+126684,
+126685,
+126850,
+129803,
+126849,
+126407,
+126366,
+126360,
+126382,
+126381,
+179342,
+);
+
+	$items = array(
+127058,
+127056,
+126147,
+127008,
+127007,
+127009,
+127057,
+127010,
+126851,
+);
+
+
+$items = array(127007);
+
+$items = array(
+92797,
+49300,
+127560,
+127562,
+127416,
+345769,
+127561,
+127369,
+127414,
+127415,
+);
+
+$items = array(49300);
+	
+	$redo_ocr = true;
+	
+	//$items = array();
+}
+
+// The Coral Triangle : the 2011 Hearst Philippine Biodiversity Ex
+if (1)
+{
+	$TitleID = 154474;
+	$items = array(259232);
+	
+}
+
+if (1)
+{
+	$TitleID = 16176; // 16143
+	$items = array();
+	$redo_ocr = true;
+	
+}
+
+
+if (1)
+{
+	$TitleID = 98543; 
+	$items = array();
+	$redo_ocr = true;
+	
+}
+
+
+
+if (1)
+{
+	// lots of false postives from bibliography :(
+	// Journal de conchyliologie
+	$TitleID = 14924; 
+	$items = array(54228);
+	$items = array(55084);
+	$redo_ocr = true;
+	//$fetch_all_text = true;
+}
+
+if (1)
+{
+	// Memórias do Instituto Butantan
+	$TitleID = 122512; 
+	$items = array(243620);
+	$items = array(251276);
+	$redo_ocr = true;
+	$fetch_all_text = false;
+}
+
+if (1)
+{
+	// Revista chilena de entomología
+	$TitleID = 46370; 
+	$items = array(103355);
+	$redo_ocr = true;
+	$fetch_all_text = false;
+}
+
+if (1)
+{
+	// Records of the Albany Museum
+	$TitleID = 7383; 
+	$items = array(338978);
+	$fetch_all_text = true;
+	$redo_ocr = false;
+}
+
+
+if (0)
+{
+	// Timehri : the journal of the Royal Agricultural and Commercial Society of British Guiana
+	$TitleID = 58209; 
+	$items = array(119468);
+	$redo_ocr = true;
+}
+
+
+if (1)
+{
+	// Timehri : the journal of the Royal Agricultural and Commercial Society of British Guiana
+	$TitleID = 78760; 
+	$items = array(150348,150351);
+	$redo_ocr = true;
+}
+
+if (1)
+{
+	// Memorie della Società italiana di scienze naturali e del Museo civico di storia naturale di Milano
+	$TitleID = 159712; 
+	$items = array(348435);
+	$redo_ocr = false;
+	$fetch_all_text = false;
+}
+
+if (1)
+{
+	$TitleID = 12260;
+	$items = array(45635,148217);
+}
+
+// Horae Societatis Entomologicae Rossicae
+if (1)
+{
+	$TitleID = 87655;
+	$items = array(46209);
+	//$items = [];
+	$redo_ocr = true;
+	$fetch_all_text = false;
+
+}
 
 
 $force = true;
@@ -859,6 +1140,30 @@ foreach ($items as $ItemID)
 		
 		file_put_contents($output_filename, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 	}
+	
+	
+	if ($fetch_all_text)
+	{
+		echo "Getting text for all pages...\n";
+		$json = file_get_contents($output_filename);
+		$doc = json_decode($json);
+		
+		$n = count($doc->pages);
+		for ($i = 0; $i < $n; $i++)
+		{
+			echo "$i\n";
+			if (!isset($doc->pages[$i]->text) || $force)
+			{
+				$page_data = get_page($doc->pages[$i]->id, $force, $basedir);
+				$doc->pages[$i]->text = $page_data->Result->OcrText;	
+			}		
+		}
+		
+		file_put_contents($output_filename, json_encode($doc, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+		
+	}
 }
+
+
 
 ?>

@@ -29,7 +29,16 @@ function extract_structured($prompt, $text, $force = false)
 	$json = preg_replace('/^\`\`\`json/', '', $json);
 	$json = preg_replace('/\`\`\`\s*$/', '', $json);
 	
+	echo $json;
+	
 	$obj = json_decode($json);
+	
+	if (json_last_error() != JSON_ERROR_NONE)
+	{
+		echo $json . "\n";
+		echo "Error parsing JSON: " . json_last_error_msg();
+		exit();
+	}
 	
 	return $obj;
 
@@ -133,6 +142,8 @@ if ($have_contents_page )
 
 	$prompt = join(" ", $prompts);
 	
+	// echo $prompt;
+	
 	print_r($doc->contents_pages);
 
 	foreach ($doc->contents_pages as $index)
@@ -147,13 +158,17 @@ if ($have_contents_page )
 				
 		}				
 
-		//echo $doc->pages[$index]->text; exit();
+		if (1)
+		{
+			echo $doc->pages[$index]->text;
+		}
 		
 		//$toc_from_text = extract_as_array_of_objects($prompt, $doc->pages[$index]->text);
 		$toc_from_text = extract_structured($prompt, $doc->pages[$index]->text);
 
+		echo "\ntoc_from_text\n";
 		print_r($toc_from_text);
-	
+			
 		if (is_array($toc_from_text))
 		{
 			foreach ($toc_from_text as &$c)

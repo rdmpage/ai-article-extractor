@@ -40,7 +40,7 @@ if (isset($doc->toc))
 			$c->score = 0;
 		
 			$page_number = $c->page; // for now assume is single number
-			$page_number = preg_replace('/^(\d+|[ivx]+)\s*(-.*)$/', '$1', $page_number);
+			$page_number = preg_replace('/^(\d+|[ivx]+)\s*(-.*)$/i', '$1', $page_number);
 			
 			echo "page_number $page_number\n";
 			

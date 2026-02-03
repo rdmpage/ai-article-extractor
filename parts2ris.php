@@ -90,8 +90,36 @@ if (isset($doc->parts))
 						case 'title':
 							if (0)
 							{
-								$v = mb_convert_case($v, MB_CASE_UPPER);
-							}						
+								if (preg_match('/[A-Z \.]{10,}/', $v))
+								{
+									$v = mb_convert_case($v, MB_CASE_TITLE);
+								}
+								
+								// $v = mb_convert_case($v, MB_CASE_UPPER);
+							}
+							
+							if (0)	
+							{							
+								$v = mb_convert_case($v, MB_CASE_LOWER);
+								
+								$smallwordsarray = array('of','a','the','and','an','or','nor','but','is','if','then','else','when','at','from','by','on','off','for','in','out','over','to','into','with');					
+								$words = explode(' ', $v);
+								
+								print_r($words);
+								
+								foreach ($words as $key => $word)
+								{
+									// If this word is the first, or it's not one of our small words, capitalise it
+									// with ucwords().
+									if ($key == 0 or !in_array($word, $smallwordsarray))
+									{
+										$words[$key] = ucwords($word);
+									}
+								}	
+								
+								$v = implode(' ', $words);
+
+							}
 							
 							echo $field_to_ris_key[$k] . '  - ' . trim($v) . "\n";													
 							break;

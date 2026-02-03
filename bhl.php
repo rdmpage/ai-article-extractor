@@ -210,7 +210,7 @@ function get_page($PageID, $force = false, $basedir = '')
 
 //----------------------------------------------------------------------------------------
 // Re OCR a BHL page
-function ocr_bhl_page($PageID, $language = 'en-US', $force = false)
+function ocr_bhl_page($PageID, $language = 'en-US', $force = true)
 {
 	global $config;
 	

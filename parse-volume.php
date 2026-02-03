@@ -159,7 +159,8 @@ function parse_volume($text)
 		// 4, no 2, 1988
 		'/^' . $volume_one_number . ',\s*' . $issue_pattern. ',\s*' . $year_pattern . '/',
 		
-
+		// ser.3:v.1 (1911)
+		'/^' . $series_pattern . $volume_issue_separator . $volume_prefix . $volume_one_number . $date_pattern_one_year . '/',
 
 		// fallbacks
 		'/^' . $volume_number_pattern . '$/',
@@ -2142,7 +2143,19 @@ if (0)
 	$input=array(	
 	'nr.57 (2011)',
 	);
+	
+	$input = array(
+	'v.122-123 (1988-1989)',
+	);
+	
+	$input = array(
+	'ser.3:v.1 (1911)',
+	);
 
+	$input = array(
+'v.21=no.61-62 (1908-1909)',
+'v.16-17=no.50-52 (1899-1901)',
+);
 
 	$failed = array();
 

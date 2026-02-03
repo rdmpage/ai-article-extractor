@@ -17,7 +17,7 @@ else
 }
 
 $force = false;
-$force = true;
+//$force = true;
 
 $json = file_get_contents ($filename);
 
@@ -51,9 +51,12 @@ if ($have_contents_page )
 			{
 				switch ($doc->bhl_title_id)
 				{
-					case 10241:
+					case  10241:
+					case  87655:
 					case 150137:
 					case 135556:
+					case 135556:
+					
 						if (0)
 						{
 							$doc->pages[$index]->text = ocr_ia_page($doc, $index);						
@@ -113,10 +116,13 @@ if (isset($doc->toc))
 								case   8982:
 								case   9985:
 								case  10241:
-								case  43408:								
+								case  11933:
+								case  43408:	
+								case  79636:
 								case 135556:
 								//case 150137:
 								case 103155:
+							
 								case 212322:
 									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
 									break;

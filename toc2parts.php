@@ -73,6 +73,10 @@ function extract_metadata($text, $title_hint = '', $keys = ["title", "authors"])
 
 	$prompt_lines[] = 'Be sure not to conflate the journal, volume, and page numbers with the title of the article.';	
 	
+	$prompt_lines[] = 'Respect the original capitalisation of the title text.';
+	
+	$prompt_lines[] = 'Be careful not to confused numbers for plates with page numbers.';
+	$prompt_lines[] = 'Plates typically use Roman numbers, do NOT use these for page numbers';
 
 	$prompt_lines[] = 'The text to analyse is: ';
 
@@ -116,7 +120,20 @@ if (isset($doc->pagenum_to_page))
 
 // settings
 $make_title_uppercase = false;
-//$make_title_uppercase = true;
+
+switch ($doc->bhl_title_id)
+{
+	case 61893:
+		$make_title_uppercase = true;
+		//$make_title_uppercase = false;
+		break;
+		
+	default:
+		$make_title_uppercase = false;
+		break;
+		
+}
+
 
 $doc->parts = array();
 
@@ -169,6 +186,10 @@ if (isset($doc->toc))
 						case 10241: // Revista do Museu Paulista
 						case 150137: // Contributions of the American Entomological Institute
 						case 206514:
+						case 154474:
+						case 16176:
+						case 16143:
+						case 58209:
 							$keys = ["title", "authors"];
 							break;
 
@@ -328,7 +349,9 @@ if (isset($doc->toc))
 					if (!isset($article->epage) && isset($c->epage))
 					{
 						$article->epage = $c->epage;
-					}					
+					}	
+					
+									
 					
 					// where does title start on the page?
 					$article->title_start = $c->spans[1][0];
@@ -339,6 +362,10 @@ if (isset($doc->toc))
 					if (isset($doc->volume) && !isset($article->volume))
 					{
 						$article->volume = $doc->volume;
+					}
+					if (isset($doc->issue) && !isset($article->issue))
+					{
+						$article->issue = $doc->issue;
 					}
 					if (isset($doc->year) && !isset($article->year))
 					{
@@ -374,12 +401,38 @@ if (isset($doc->toc))
 								case 8068: // Anales de la Sociedad Española de Historia Natural
 									$article->issn = '0210-5160';
 									break;
+									
+								case 9612: // Bollettino della Società entomologica italiana
+									$article->journal = 'Bollettino della Società entomologica italiana';
+									$article->issn = '0037-8747';
+									break;																		
 							
 								case 51678: // The journal of the Asiatic Society of Bengal
 									$article->issn = '0368-1068';
 									$article->journal = 'Journal of The Asiatic Society of Bengal';
 									break;
+									
+								case 61893:
+									$article->journal = 'Records of the South Australian Museum';
+									break;
 							
+								case 79636: // Journal of the Entomological Society of Ontario
+									$article->issn = '1713-7845';
+									$article->journal =  'Journal of the Entomological Society of Ontario';
+									break;
+
+								case 87655: // Horae Societatis Entomologicae Rossicae
+									$article->journal 	= 'Horae Societatis Entomologicae Rossicae';
+									$article->volume 	= $doc->volume;
+									$article->year 		= $doc->year;
+									
+									unset($article->issue);
+									break;	
+									
+								case 12260: // Deutsche entomologische Zeitschrift Iris
+									$article->journal = 'Deutsche entomologische Zeitschrift Iris';
+									break;
+																
 								case 206514: // Contributions of the American Entomological Institute
 									$article->title = mb_convert_case($article->title, MB_CASE_UPPER);
 									break;
@@ -387,8 +440,8 @@ if (isset($doc->toc))
 								case 212322: // Memorie della Società entomologica italiana
 									$article->journal = 'Memorie della Società Entomologica Italiana';
 									$article->issn = '2282-1228';
-									break;									
-					
+									break;	
+																							
 								default:
 									break;
 							}
@@ -427,7 +480,7 @@ if (isset($doc->toc))
 					}
 				}
 			
-				print_r($articles);
+				//print_r($articles);
 				
 				// ignore "empty" articles
 				$go = true;
@@ -464,8 +517,6 @@ foreach ($doc->parts as $index => $articles)
 }
 ksort($contents_list, SORT_NUMERIC);
 
-//print_r($contents_list);
-
 $n = count($contents_list);
 
 for ($i = 0; $i < ($n - 1); $i++)
@@ -473,79 +524,108 @@ for ($i = 0; $i < ($n - 1); $i++)
 	foreach($doc->parts[$contents_list[$i]] as &$article)
 	{
 		if (!isset($article->epage))
-		{
-			$next_index = $i + 1;
-			if (isset($doc->parts[$contents_list[$next_index]][0]->spage))
+		{			
+			// page fixes
+			if (isset($doc->bhl_title_id))
 			{
-				$next_spage = $doc->parts[$contents_list[$next_index]][0]->spage;
-			
-				if (isset($doc->pagenum_to_page[$next_spage]))
+				switch ($doc->bhl_title_id)
 				{
-					// to do: handle having multiple pages with the same number
-					
-					$next_spage_index = $doc->pagenum_to_page[$next_spage][0];
-					
-					// need to figure out if article ends on same page as next article, 
-					// or before
-					
-					if (isset($doc->parts[$contents_list[$next_index]][0]->title_start))
-					{
-						if ($doc->parts[$contents_list[$next_index]][0]->title_start > 100)
-						{
-							// next title likely starts at the top of the page
-							switch ($doc->bhl_title_id)
-							{
-								case 150137:
-									$next_spage_index--;
-									break;
-																
-								default:
-									break;
-							}
-						}
-						else
-						{
-							// next title is down the page, so current article ends on
-							// same page as next article starts
-							$next_spage_index--;
-						}
-					}
-					else
-					{					
-						$next_spage_index--;
-					}
-					
-					// handle blank pages
-					$is_blank = false;
-					
-					if (in_array('blank', $doc->pages[$next_spage_index]->tags))
-					{
-						$is_blank = true;
-					}
-					
-					if (!isset($doc->pages[$next_spage_index]->number))
-					{
-						$is_blank = true;
-					}					
-					
-					if ($is_blank)
-					{
-						$next_spage_index--;
-					}
-					
-					if (isset($doc->pages[$next_spage_index]->number))
-					{
-						$article->epage = $doc->pages[$next_spage_index]->number;
+					case 61893: // RecordsSouthAus
+						// get the current page number 
 						
-						// sanity check
-						if (isset($article->spage))
+						$index = $contents_list[$i];
+						if (isset($doc->pages[$index]->number))
 						{
-							if ($article->epage < $article->spage)
+							$article->spage = $doc->pages[$index]->number;
+							
+							// try to extend it, assume pages are numbered consecuitively,
+							// and articles are separated by un-numbered pages
+							$page_index = $index;
+							while (isset($doc->pages[$page_index]->number))
 							{
-								unset($article->epage);
+								$article->epage = $doc->pages[$page_index]->number;
+								$page_index++;
 							}
 						}
-					}
+						break;
+						
+					default:
+					
+						$next_index = $i + 1;
+						if (isset($doc->parts[$contents_list[$next_index]][0]->spage))
+						{
+							$next_spage = $doc->parts[$contents_list[$next_index]][0]->spage;
+						
+							if (isset($doc->pagenum_to_page[$next_spage]))
+							{
+								// to do: handle having multiple pages with the same number
+								
+								$next_spage_index = $doc->pagenum_to_page[$next_spage][0];
+								
+								// need to figure out if article ends on same page as next article, 
+								// or before
+								
+								if (isset($doc->parts[$contents_list[$next_index]][0]->title_start))
+								{
+									if ($doc->parts[$contents_list[$next_index]][0]->title_start > 100)
+									{
+										// next title likely starts at the top of the page
+										switch ($doc->bhl_title_id)
+										{
+											case 150137:
+												$next_spage_index--;
+												break;
+																			
+											default:
+												break;
+										}
+									}
+									else
+									{
+										// next title is down the page, so current article ends on
+										// same page as next article starts
+										$next_spage_index--;
+									}
+								}
+								else
+								{					
+									$next_spage_index--;
+								}
+								
+								// handle blank pages
+								$is_blank = false;
+								
+								if (in_array('blank', $doc->pages[$next_spage_index]->tags))
+								{
+									$is_blank = true;
+								}
+								
+								if (!isset($doc->pages[$next_spage_index]->number))
+								{
+									$is_blank = true;
+								}					
+								
+								if ($is_blank)
+								{
+									$next_spage_index--;
+								}
+								
+								if (isset($doc->pages[$next_spage_index]->number))
+								{
+									$article->epage = $doc->pages[$next_spage_index]->number;
+									
+									// sanity check
+									if (isset($article->spage))
+									{
+										if ($article->epage < $article->spage)
+										{
+											unset($article->epage);
+										}
+									}
+								}
+							}
+						}
+						break;
 				}
 			
 			}
