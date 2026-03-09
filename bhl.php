@@ -197,12 +197,26 @@ function get_page($PageID, $force = false, $basedir = '')
 		echo $url . "\n";
 
 		$json = get($url);
+		
+		if (json_decode($json) === null)
+		{
+			echo "Bad JSON for $PageID\n";
+			exit();
+		}
+		
 		file_put_contents($filename, $json);
 		
 		$fetch_counter++;
 	}
 
 	$json = file_get_contents($filename);
+	
+	if (json_decode($json) === null)
+	{
+		echo "Bad JSON for $PageID\n";
+		exit();
+	}
+	
 	$page_data = json_decode($json);
 	
 	return $page_data;
@@ -224,6 +238,7 @@ function ocr_bhl_page($PageID, $language = 'en-US', $force = true)
 		if (!file_exists($image_filename))
 		{	
 			$url = 'https://www.biodiversitylibrary.org/pageimage/' . $PageID;
+			$url = 'https://bhl-light-806b8b6fa073.herokuapp.com/pageimage/' . $PageID;
 			$image = get($url);	
 			file_put_contents($image_filename, $image);
 		}

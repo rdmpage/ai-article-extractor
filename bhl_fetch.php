@@ -378,8 +378,34 @@ $titles = array(
 
 // Horae Societatis Entomologicae Rossicae, variis sermonibus in Rossia usitatis editae
 $titles = array(
-87655,
+//87655,
 //$items=array(46209)
+//12498,
+
+41367,
+);
+
+// Atas do simpósio sobre a biota amazônica Belém
+$titles = array(
+110138,
+);
+
+// Mémoires couronnés et mémoires des savants étrangers
+$titles = array(
+6368,
+);
+
+// Tools for identifying biodiversity : progress and problems
+$titles = array(
+218607,
+);
+
+$titles = array(
+52319, // A collection of essays for Mr. Yasushi Nawa
+);
+
+$titles = array(
+66539, // Brimleyana
 );
 
 

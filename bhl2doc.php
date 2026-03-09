@@ -1067,6 +1067,56 @@ if (1)
 
 }
 
+// The Journal of entomology
+if (1)
+{
+	$TitleID = 12498;
+	$items = array(47912);
+	//$items = [];
+	$redo_ocr = true;
+	$fetch_all_text = false;
+
+}
+
+// The natural history of Juan Fernandez and Easter Island
+if (1)
+{
+	$TitleID = 41367;
+	//$items = array(67414);
+	$items = [];
+	$redo_ocr = true;
+	$fetch_all_text = false;
+}
+
+// Atas do simpósio sobre a biota amazônica Belém
+if (1)
+{
+	$TitleID = 110138;
+	$items = [];
+	$redo_ocr = false;
+	$fetch_all_text = false;
+}
+
+
+// Tools for identifying biodiversity : progress and problems
+if (1)
+{
+	$TitleID = 218607;
+	$items = [];
+	$redo_ocr = true;
+	$fetch_all_text = false;
+}
+
+// Brimleyana
+if (1)
+{
+	$TitleID = 66539;
+	$items = [];
+	$redo_ocr = true;
+	$fetch_all_text = false;
+}
+
+
 
 $force = true;
 //$force = false;

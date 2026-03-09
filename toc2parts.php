@@ -190,6 +190,7 @@ if (isset($doc->toc))
 						case 16176:
 						case 16143:
 						case 58209:
+						case 41367:
 							$keys = ["title", "authors"];
 							break;
 
@@ -277,6 +278,7 @@ if (isset($doc->toc))
 									{
 										$article->{$k} = arabic($article->{$k});
 									}
+									$article->{$k} = preg_replace('/[N|n]o\.\s+/i', '', $article->{$k});
 								break;
 									
 								case 'title':
@@ -293,6 +295,11 @@ if (isset($doc->toc))
 									$article->{$k} = preg_replace('/^([IVXL]+)\.\s*([A-Z])/i', '$1.—$2', $article->{$k});
 									$article->{$k} = preg_replace('/^([IVXL]+)\.\s*-(\s*-)?\s*([A-Z])/i', '$1.—$3', $article->{$k});
 									break;
+									
+								case 'pages':
+									$article->{$k} = preg_replace('/^pp\.?\s+/', '', $article->{$k});
+									break;
+									
 								
 																
 								default:
@@ -412,9 +419,20 @@ if (isset($doc->toc))
 									$article->journal = 'Journal of The Asiatic Society of Bengal';
 									break;
 									
-								case 61893:
-									$article->journal = 'Records of the South Australian Museum';
+								case 12498:
+									$article->journal = 'The Journal of entomology: descriptive and geographical';
 									break;
+
+								case 41367:
+									$article->journal = 'The Natural history of Juan Fernandez and Easter Island';
+									$article->volume 	= $doc->volume;
+									$article->year 		= $doc->year;
+									unset($article->issue);
+									break;
+									
+								case 66539: // Brimleyana
+									unset($article->issue);
+									break;									
 							
 								case 79636: // Journal of the Entomological Society of Ontario
 									$article->issn = '1713-7845';
@@ -429,6 +447,10 @@ if (isset($doc->toc))
 									unset($article->issue);
 									break;	
 									
+								case 110138:
+									$article->journal 	= 'Atas do simpósio sobre a biota amazônica Belém, Pará, Brasil, Junho 6-11, 1966';
+									break;
+																		
 								case 12260: // Deutsche entomologische Zeitschrift Iris
 									$article->journal = 'Deutsche entomologische Zeitschrift Iris';
 									break;

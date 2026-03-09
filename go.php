@@ -301,12 +301,39 @@ if (1)
 	
 }
 
+// Brimleyana
+if (1)
+{
+	$TitleID = 66539;
 
+	$items = array(
+		228571, // 13
+		228618, // 14
+		228671, // 15
+		228580, // 16
+	);
+	
+	$items = [228580];
+	
+	$items= [
+	133778,
+	228623,
+	228737,
+	228675,
+	228625,
+	133779,
+	133776,
+	133761,
+	133758,
+	133780,	
+	];
+	
+	$default_workflow = 'toc'; // important as otherwise we often use the wrong workflow
+}
 
 $basedir = $config['cache'] . '/' . $TitleID;
 
 $output_dir = dirname(__FILE__);
-
 
 // make sure we have items
 if (count($items) == 0)
@@ -368,15 +395,6 @@ foreach ($items as $item)
 
 print_r($workflow);
 
-/*
-$workflow = array(332410 => 'toc');
-
-$workflow = array(332345 => 'issues');
-$workflow = array(332539 => 'issues');
-*/
-
-
-
 foreach ($workflow as $item => $taskname)
 {
 	$tools = array();
@@ -422,10 +440,6 @@ foreach ($workflow as $item => $taskname)
 	
 	echo $command . "\n";
 	system($command);	
-	
-
-
 }
-
 
 ?>

@@ -10,5 +10,11 @@
 env.php
 cookie.txt
 
+*.json
+*.ris
+*.request
+*.tsv
+
 /junk/
 /done/
+/todo/

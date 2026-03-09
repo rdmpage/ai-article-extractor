@@ -99,10 +99,19 @@ if (isset($doc->toc))
 				{				
 					if (!isset($doc->pages[$index]->text))
 					{
-						$page_data = get_page($doc->pages[$index]->id, false, $basedir);
-						
-						// by default use BHL OCR text
-						$doc->pages[$index]->text = $page_data->Result->OcrText;
+						if (1)
+						{
+							$page_data = get_page($doc->pages[$index]->id, false, $basedir);
+							
+							// by default use BHL OCR text
+							$doc->pages[$index]->text = $page_data->Result->OcrText;
+						}
+						else
+						{
+							// BHL off line?
+							$url = 'http://localhost/bhl-light/pagetext/' . $doc->pages[$index]->id;
+							$doc->pages[$index]->text = get($url);							
+						}
 						
 						// OCR?
 						if (isset($doc->bhl_title_id))
@@ -127,6 +136,7 @@ if (isset($doc->toc))
 									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id);
 									break;
 									
+								// Chinese
 								case  53832:
 									$doc->pages[$index]->text = ocr_bhl_page($doc->pages[$index]->id, 'zh-cn');
 									break;
@@ -140,6 +150,7 @@ if (isset($doc->toc))
 			}
 			else
 			{
+				// BHL doesn't have a page with this number (e.g., it's the first page)
 				echo "$page_number not set in doc->pagenum_to_page\n";
 			}
 		}
