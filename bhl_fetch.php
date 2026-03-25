@@ -408,6 +408,10 @@ $titles = array(
 66539, // Brimleyana
 );
 
+// Bihang till Kongl. Svenska vetenskaps-akademiens handlingar
+$titles=array(
+13353
+);
 
 //----------------------------------------------------------------------------------------
 

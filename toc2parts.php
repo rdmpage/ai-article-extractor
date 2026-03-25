@@ -278,7 +278,7 @@ if (isset($doc->toc))
 									{
 										$article->{$k} = arabic($article->{$k});
 									}
-									$article->{$k} = preg_replace('/[N|n]o\.\s+/i', '', $article->{$k});
+									$article->{$k} = preg_replace('/[N|n]o\.\s*/i', '', $article->{$k});
 								break;
 									
 								case 'title':

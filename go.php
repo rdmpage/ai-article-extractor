@@ -328,7 +328,30 @@ if (1)
 	133780,	
 	];
 	
+	$items=[
+133759,
+133762,
+133763,
+133764,
+133634,
+133766,
+133760,
+133765,
+	];
+	
 	$default_workflow = 'toc'; // important as otherwise we often use the wrong workflow
+}
+
+
+
+// Bihang till Kongl. Svenska vetenskaps-akademiens handlingar
+if (1)
+{
+	$TitleID = 13353;
+	$items=[];
+	$default_workflow = 'series';
+
+
 }
 
 $basedir = $config['cache'] . '/' . $TitleID;
@@ -408,6 +431,10 @@ foreach ($workflow as $item => $taskname)
 		case 'issues':
 			$tools = array('issue2parts.php');
 			break;	
+			
+		case 'series':
+			$tools = array('doc2page_series.php');
+			break;
 
 		case 'toc':
 			$tools = array('doc2toc.php', 'doc2text.php', 'toc2match.php', 'toc2parts.php', 'dedup.php');

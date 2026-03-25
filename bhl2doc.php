@@ -1116,6 +1116,17 @@ if (1)
 	$fetch_all_text = false;
 }
 
+// Bihang till Kongl. Svenska vetenskaps-akademiens handlingar
+if (1)
+{
+	$TitleID = 13353;
+	$items = [];
+	//$items = [49831];
+	//$items = [49932];
+	$redo_ocr = false;
+	$fetch_all_text = false;
+}
+
 
 
 $force = true;
