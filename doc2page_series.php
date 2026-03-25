@@ -261,12 +261,13 @@ foreach ($doc->page_series->sequence as $index => $sequence)
 				$article->journal = $doc->title;
 			}
 			
-			$article->spage = 1;
-			
+			// pagination
+			$article->spage = 1;			
 			$article->epage = key(array_slice($sequence, -1, 1, true));
 			
-			print_r($article);
+			// print_r($article);
 			
+			// store as a part
 			if (isset($article->title))
 			{
 				if (!isset($doc->parts[$first_page->order]))
@@ -279,17 +280,7 @@ foreach ($doc->page_series->sequence as $index => $sequence)
 				}
 			
 			}
-			
-			
-		
-		
-		
 		}
-
-		
-		// create part
-		
-		// store
 	}
 
 }

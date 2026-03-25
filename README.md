@@ -71,6 +71,17 @@ doc2parts
 parts2ris
 
 
+### Pages series
+
+In some items we have one or more series of pages 1,.. n, each corresponding to an article. Ideally these start at page 1, but often they start later, the first few pages might not be explicitly numbered. We count back from the first numbered page to arrive at the presumed page “1”. We use ChatGPT to extract metadata from page 1 for each article.
+
+```mermaid
+graph TD
+start --> |bhl_fetch.php | A(Content from BHL)
+A --> |bhl2doc.php| B(convert BHL JSON to doc with list of issues with text)
+B --> |doc2page_series.php| C(extract repeating series of page numbers, use ChatGPT to parse page 1 of series for article metadata, store in doc.parts)
+C --> | parts2ris.php |H(export parts in RIS format)
+```
 
 
 ## Reading
