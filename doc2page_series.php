@@ -17,7 +17,6 @@ if (!function_exists('array_key_first')) {
     }
 }
 
-
 //----------------------------------------------------------------------------------------
 // Use ChatGPT to extract a list of structured data
 function extract_structured($prompt, $text, $force = false)
@@ -54,7 +53,6 @@ function extract_structured($prompt, $text, $force = false)
 	}
 	
 	return $obj;
-
 }
 
 //----------------------------------------------------------------------------------------
@@ -66,12 +64,14 @@ function extract_metadata($text, $keys = ["title", "authors", "journal", "volume
 	$prompt_lines = array();
 
 	$prompt_lines[] = 'Extract metadata for the article that starts on this page.';
-	
 	$prompt_lines[] = 'Output the results in JSON as an array of objects.';
 	$prompt_lines[] = 'The object should following keys (where a value is available): "' . join(",", $keys) . '".';	
-	$prompt_lines[] = 'The "authors" field should be an array.';	
+	$prompt_lines[] = 'The "authors" field should be an array and must always be labelled "authors"';	
 
 	$prompt_lines[] = 'The date should be formatted as YYYY-MM-DD.';
+	
+	$prompt_lines[] = 'The text is usually in Swedish, German, French, or English';	
+	$prompt_lines[] = 'The author name is often preceded by "von" or "af"';	
 
 	$prompt_lines[] = 'The text to analyse is: ';
 	
@@ -143,7 +143,6 @@ $doc = json_decode($json);
 
 $basedir = $config['cache'] . '/' . $doc->bhl_title_id;
 
-
 // find repeated series of pages
 
 $doc->page_series = new stdclass;
@@ -165,9 +164,27 @@ foreach ($doc->pages as $scan_order => $scan_page)
 			$doc->page_series->sequence[$sequence_counter] = array();
 		}
 	
-		// if we've seen this label before in the current sequence assume 
+		// if we've seen this label before in the current sequence, or
+		// number is less than current number in sequence, then assume 
 		// it belongs to the next sequence, which we now create
+		
+		$ok = true;
+		
 		if (isset($doc->page_series->sequence[$sequence_counter][$scan_page->number]))
+		{
+			$ok = false;
+		}
+		
+		$last = end($doc->page_series->sequence[$sequence_counter]);
+		if ($last)
+		{
+			if ((Integer)$scan_page->number < (Integer)$last->label)
+			{
+				$ok = false;
+			}
+		}
+		
+		if (!$ok)
 		{
 			// new series
 			$sequence_counter++;
@@ -192,9 +209,7 @@ foreach ($doc->pages as $scan_order => $scan_page)
 
 display_sequences($doc->page_series);
 
-
-// check that each series starts at page 1
-
+// remove any previous attempt to find parts
 if (isset($doc->parts))
 {
 	unset($doc->parts);
@@ -203,12 +218,15 @@ if (isset($doc->parts))
 foreach ($doc->page_series->sequence as $index => $sequence)
 {
 	$first_page = $sequence[array_key_first($sequence)];
+	
 	echo $index . ' ' . $first_page->label . ' ' . $first_page->order . "\n";
 	
-	if (is_numeric($first_page->label) && (Integer)$first_page->label > 1)
+	if (is_numeric($first_page->label) && (Integer)$first_page->label >= 1)
 	{
 		$offset = (Integer)$first_page->label - 1;		
 		$pos = $first_page->order - $offset;
+		
+		//echo "pos=$pos\n";
 		
 		// actual page 1
 		$PageID = $doc->pages[$pos]->id;
@@ -232,7 +250,7 @@ foreach ($doc->page_series->sequence as $index => $sequence)
 		// get metadata
 		$articles = extract_metadata($doc->pages[$pos]->text, ['title', 'author', 'volume', 'issue', 'year'], false);
 		
-		print_r($articles);
+		// print_r($articles);
 		
 		foreach ($articles as $article)
 		{
@@ -251,6 +269,26 @@ foreach ($doc->page_series->sequence as $index => $sequence)
 				}
 			}
 			
+			if (isset($article->authors))
+			{
+				switch ($doc->bhl_title_id)
+				{
+					case 13353:
+						foreach ($article->authors as $k => $v)
+						{
+							if (preg_match('/(WITTROCK|NATHORST)/i', $v))
+							{
+									unset($article->authors[$k]);
+							}
+						}
+						break;
+								
+					default:
+						break;
+				}
+			}
+			
+			
 			if (isset($doc->issn))
 			{
 				$article->issn = $doc->issn;
@@ -265,7 +303,9 @@ foreach ($doc->page_series->sequence as $index => $sequence)
 			$article->spage = 1;			
 			$article->epage = key(array_slice($sequence, -1, 1, true));
 			
-			// print_r($article);
+			//print_r($sequence);
+			
+			print_r($article);
 			
 			// store as a part
 			if (isset($article->title))
